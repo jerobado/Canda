@@ -40,6 +40,7 @@ class LoginDialog(QDialog):
     def _properties(self):
 
         self.loginLineEdit.setPlaceholderText('Enter master key here')
+        self.loginLineEdit.setEchoMode(QLineEdit.Password)
 
         self.setWindowTitle(f'Canda {__version__}')
         self.resize(402, 61)
@@ -54,7 +55,12 @@ class LoginDialog(QDialog):
 
     def _connections(self):
 
-        ...
+        # test: get text of loginlinedit
+        self.loginLineEdit.textChanged.connect(self.on_loginLineEdit_textChanged)
+
+    def on_loginLineEdit_textChanged(self):
+
+        print(self.loginLineEdit.text())
 
     def resizeEvent(self, event):
 
