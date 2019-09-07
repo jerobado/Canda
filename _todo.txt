@@ -1,8 +1,7 @@
 Development guide
 
 Today's essentials
-[x] hide the keys typed in lineedit
-[] add Ctrl+Q to quit the app
+[x] add Ctrl+Q to quit the app
 [] create main window
 [] set login credentials
 [] login then show main window

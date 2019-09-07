@@ -10,6 +10,7 @@ Benefits
 
 
 import sys
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QApplication,
                              QDialog,
                              QLineEdit,
@@ -65,6 +66,11 @@ class LoginDialog(QDialog):
     def resizeEvent(self, event):
 
         print(f'{self.width()} x {self.height()}')
+
+    def keyPressEvent(self, event):
+
+        if event.modifiers() & Qt.ControlModifier and event.key() == Qt.Key_Q:
+            self.close()
 
 
 if __name__ == '__main__':
