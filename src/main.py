@@ -22,13 +22,12 @@ from PyQt5.QtWidgets import (QApplication,
 __version__ = 0.1
 
 
-# [] TODO: transfer this to dialog directory
+# create the login window
 class LoginDialog(QDialog):
 
     def __init__(self, parent=None):
 
         super().__init__(parent)
-        self.masterkey = 'masterkey'
         self._widgets()
         self._properties()
         self._layouts()
@@ -64,16 +63,6 @@ class LoginDialog(QDialog):
 
         print(self.loginLineEdit.text())
 
-    def verify(self, unverified_key):
-        """ Verify master key. """
-
-        if unverified_key == self.masterkey:
-            print('Verified!')
-            return True
-        else:
-            print('You are not authorized.')
-            return False
-
     def resizeEvent(self, event):
 
         print(f'{self.width()} x {self.height()}')
@@ -82,9 +71,6 @@ class LoginDialog(QDialog):
 
         if event.modifiers() & Qt.ControlModifier and event.key() == Qt.Key_Q:
             self.close()
-
-        if event.key() == Qt.Key_Return:
-            print(event.key(), 'perform validation here')
 
 
 if __name__ == '__main__':
