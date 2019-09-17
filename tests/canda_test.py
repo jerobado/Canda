@@ -10,7 +10,7 @@ APP = QApplication(sys.argv)
 class CandaTest(unittest.TestCase):
 
     def setUp(self) -> None:
-        from src.main import LoginDialog
+        from canda.main import LoginDialog
         self.login_dialog = LoginDialog()
         self.login_dialog.show()
         APP.exec()
