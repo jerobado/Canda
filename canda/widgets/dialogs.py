@@ -1,28 +1,14 @@
-"""
-Canda is a desktop application password manager in the 21st century written and hand-coded in Python.
+# Create dialogs here
 
-Benefits
-* Easily retrieve login credentials of online accounts
-* Secure saved login credentials in an encrypted database stored in your local machine
-* Lock and unlock your password manager using a master password
-
-"""
-
-
-import sys
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (QApplication,
-                             QDialog,
+from PyQt5.QtWidgets import (QDialog,
                              QLineEdit,
                              QLabel,
-                             QHBoxLayout,
                              QVBoxLayout)
 
+from canda import __version__
 
-__version__ = 0.1
 
-
-# [] TODO: transfer this to dialog directory
 class LoginDialog(QDialog):
 
     def __init__(self, parent=None):
@@ -57,7 +43,6 @@ class LoginDialog(QDialog):
 
     def _connections(self):
 
-        # test: get text of loginlinedit
         self.loginLineEdit.textChanged.connect(self.on_loginLineEdit_textChanged)
 
     def on_loginLineEdit_textChanged(self):
@@ -67,8 +52,10 @@ class LoginDialog(QDialog):
     def verify(self, unverified_key):
         """ Verify master key. """
 
+        # [x] TODO: create a window to show the stored login credentials
         if unverified_key == self.masterkey:
             print('Verified!')
+            self.accept()
             return True
         else:
             print('You are not authorized.')
@@ -85,10 +72,31 @@ class LoginDialog(QDialog):
 
         if event.key() == Qt.Key_Return:
             print(event.key(), 'perform validation here')
+            self.verify(self.loginLineEdit.text())
 
 
-if __name__ == '__main__':
-    APP = QApplication(sys.argv)
-    window = LoginDialog()
-    window.show()
-    APP.exec()
+class MainDialog(QDialog):
+
+    def __init__(self, parent=None):
+
+        super().__init__(parent)
+        self._widgets()
+        self._properties()
+        self._layouts()
+        self._connections()
+
+    def _widgets(self):
+
+        ...
+
+    def _properties(self):
+
+        self.setWindowTitle('Canada - Password Manager')
+
+    def _layouts(self):
+
+        ...
+
+    def _connections(self):
+
+        ...
