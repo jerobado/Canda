@@ -10,10 +10,16 @@ APP = QApplication(sys.argv)
 class CandaTest(unittest.TestCase):
 
     def setUp(self) -> None:
-        from canda.main import LoginDialog
-        self.login_dialog = LoginDialog()
-        self.login_dialog.show()
-        APP.exec()
+        if sys.platform == 'win32':
+            from canda.main import LoginDialog
+            self.login_dialog = LoginDialog()
+            self.login_dialog.show()
+            APP.exec()
+        else:
+            print('running on non-windows environment')
+
+    def test_dialog_windowtitle(self):
+        self.assertEqual(self.login_dialog.windowTitle(), 'Canda 0.1')
 
     def test_loginLineEdit_echomode(self):
         """ Test if loginLineEdit's echomode is QLineEdit.Password or equal to 2 """
@@ -24,7 +30,7 @@ class CandaTest(unittest.TestCase):
         print(f'expected_result {expected_result}')
         self.assertEqual(expected_result, test_result)  # result should be equal to 2
 
-    def test_verify_function(self):
+    def test_verify_function_true(self):
         """ Test if LoginDialog.verify() will return True if 'masterkey' matches. """
 
         test_result = self.login_dialog.loginLineEdit.text()
