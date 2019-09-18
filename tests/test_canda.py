@@ -25,13 +25,20 @@ class CandaTest(unittest.TestCase):
         self.assertEqual(expected_result, test_result)  # result should be equal to 2
 
     def test_verify_function(self):
-        """ Test if LoginDialog.verify() will return true if login credential is equal to 'masterkey' """
+        """ Test if LoginDialog.verify() will return True if 'masterkey' matches. """
 
         test_result = self.login_dialog.loginLineEdit.text()
         expected_result = self.login_dialog.verify(test_result)
         print(f'test_result: {test_result}')
         print(f'expected_result {expected_result}')
         self.assertTrue(expected_result, test_result)
+
+    def test_verify_function_false(self):
+        """ Test if LoginDialog.verify will return False if 'masterkey' does not matched. """
+
+        test_result = self.login_dialog.loginLineEdit.text()
+        expected_result = self.login_dialog.verify(test_result)
+        self.assertFalse(expected_result, test_result)
 
 
 if __name__ == '__main__':
