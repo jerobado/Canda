@@ -4,4 +4,4 @@ python:
 install:
   - pip install -r requirements.txt
 script:
-  - python -m unittest discover -s tests/linux
+  - python -m unittest tests.windows.test_canda_windows.CandaCoreTest

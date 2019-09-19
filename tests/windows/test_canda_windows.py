@@ -7,7 +7,8 @@ from PyQt5.QtWidgets import QLineEdit, QApplication
 APP = QApplication(sys.argv)
 
 
-class CandaTest(unittest.TestCase):
+class CandaGUITest(unittest.TestCase):
+    """ Testing only the GUI """
 
     def setUp(self) -> None:
         if sys.platform == 'win32':
@@ -45,6 +46,21 @@ class CandaTest(unittest.TestCase):
         test_result = self.login_dialog.loginLineEdit.text()
         expected_result = self.login_dialog.verify(test_result)
         self.assertFalse(expected_result, test_result)
+
+
+class CandaCoreTest(unittest.TestCase):
+    """ Testing only canda.py """
+
+    def setUp(self) -> None:
+        from canda.core import canda
+        self.canda = canda
+
+    def test_MASTER_KEY_if_equal(self):
+        """ Test if MASTER_KEY is equal to 'masterkey' """
+
+        result = self.canda.MASTER_KEY
+        expected = 'masterkey'
+        self.assertEqual(expected, result, 'discrepancy in masterkey ')
 
 
 if __name__ == '__main__':
