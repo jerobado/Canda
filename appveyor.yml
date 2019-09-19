@@ -110,10 +110,9 @@ install:
 build_script:
 
   - cd %APPVEYOR_BUILD_DIR%
-  - pip install -e .
 
 test_script:
 
   # Run the project tests
   - cd %APPVEYOR_BUILD_DIR%
-  - pytest tests --cov enaml --cov-report xml
+  - python -m unittest tests.windows.test_canda_windows.CandaCoreTest
