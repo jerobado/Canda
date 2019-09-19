@@ -52,14 +52,13 @@ class LoginDialog(QDialog):
     def verify(self, unverified_key):
         """ Verify master key. """
 
-        # [x] TODO: create a window to show the stored login credentials
         if unverified_key == self.masterkey:
             print('Verified!')
             self.accept()
             return True
         else:
-            print('You are not authorized.')
-            return False
+            print('Master key does not match. Try again.')
+            return 0
 
     def resizeEvent(self, event):
 
@@ -71,7 +70,7 @@ class LoginDialog(QDialog):
             self.close()
 
         if event.key() == Qt.Key_Return:
-            print(event.key(), 'perform validation here')
+            print('validating master key...')
             self.verify(self.loginLineEdit.text())
 
 
