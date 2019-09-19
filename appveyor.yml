@@ -1,79 +1,137 @@
-
-
-
-
-
 environment:
   global:
-    # without this flag, debugging is a nightmare :)
-    APPVEYOR_SAVE_CACHE_ON_ERROR: true
+    # SDK v7.0 MSVC Express 2008's SetEnv.cmd script will fail if the
+    # /E:ON and /V:ON options are not enabled in the batch script intepreter
+    # See: http://stackoverflow.com/a/13751649/163740
+    CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env.cmd"
+
   matrix:
-    # Unfortunately this build does not work with miniconda 32 bit, or so it seems. To re-test one of these days...
-#    - PYTHON_VERSION: "3.5"
-#      # PYTHON: "C:\\Python35"
-#      MINICONDA: "C:\\Miniconda35"
-    - PYTHON_VERSION: "3.6"
-      # PYTHON: "C:\\Python35-x64"
-      MINICONDA: "C:\\Miniconda35-x64"
-      QT_VER: 5.6.3
-      QT_DIR_REL: Qt5.6.3
-      PYQT_VER: 5.6
-      PYQT_DIR_REL: PyQt5.6-with_src
-      # This folder has to have the same same than the python package!
-      PYQT_DIST_REL: PyQt5
-      MSYS2_DIR: "C:\\msys64"
-      MSYSTEM: MINGW64
 
-cache:
-  # caching MSYS2 takes more time than installing, so only cache Qt target and PyQt directories.
-  # note: the cache automatically depends on the environment variables matrix (e.g. python version)
-  - '%QT_DIR_REL%'
-  - '%PYQT_DIR_REL% -> ci_tools\build_pyqt.bat'
+    # Python 2.7.10 is the latest version and is not pre-installed.
 
-init:
-  - "ECHO %PYTHON_VERSION% %MINICONDA%"  # %PYTHON%
+    - PYTHON: "C:\\Python27.10"
+      PYTHON_VERSION: "2.7.10"
+      PYTHON_ARCH: "32"
 
-# **** Miniconda version ****
+    - PYTHON: "C:\\Python27.10-x64"
+      PYTHON_VERSION: "2.7.10"
+      PYTHON_ARCH: "64"
+
+    # Pre-installed Python versions, which Appveyor may upgrade to
+    # a later point release.
+    # See: https://www.appveyor.com/docs/installed-software#python
+
+    - PYTHON: "C:\\Python27"
+      PYTHON_VERSION: "2.7.x" # currently 2.7.9
+      PYTHON_ARCH: "32"
+
+    - PYTHON: "C:\\Python27-x64"
+      PYTHON_VERSION: "2.7.x" # currently 2.7.9
+      PYTHON_ARCH: "64"
+
+    - PYTHON: "C:\\Python33"
+      PYTHON_VERSION: "3.3.x" # currently 3.3.5
+      PYTHON_ARCH: "32"
+
+    - PYTHON: "C:\\Python33-x64"
+      PYTHON_VERSION: "3.3.x" # currently 3.3.5
+      PYTHON_ARCH: "64"
+
+    - PYTHON: "C:\\Python34"
+      PYTHON_VERSION: "3.4.x" # currently 3.4.3
+      PYTHON_ARCH: "32"
+
+    - PYTHON: "C:\\Python34-x64"
+      PYTHON_VERSION: "3.4.x" # currently 3.4.3
+      PYTHON_ARCH: "64"
+
+    - PYTHON: "C:\\Python36"
+      PYTHON_VERSION: "3.6.x" # currently 3.6.5
+      PYTHON_ARCH: "32"
+
+    - PYTHON: "C:\\Python36-x64"
+      PYTHON_VERSION: "3.6.x" # currently 3.6.5
+      PYTHON_ARCH: "64"
+
+    - PYTHON: "C:\\Python37-x64"
+      PYTHON_VERSION: "3.7.x" # currently 3.7.4
+      PYTHON_ARCH: "64"
+
+    # Python versions not pre-installed
+
+    # Python 2.6.6 is the latest Python 2.6 with a Windows installer
+    # See: https://github.com/ogrisel/python-appveyor-demo/issues/10
+
+    - PYTHON: "C:\\Python266"
+      PYTHON_VERSION: "2.6.6"
+      PYTHON_ARCH: "32"
+
+    - PYTHON: "C:\\Python266-x64"
+      PYTHON_VERSION: "2.6.6"
+      PYTHON_ARCH: "64"
+
+    - PYTHON: "C:\\Python35"
+      PYTHON_VERSION: "3.5.0"
+      PYTHON_ARCH: "32"
+
+    - PYTHON: "C:\\Python35-x64"
+      PYTHON_VERSION: "3.5.0"
+      PYTHON_ARCH: "64"
+
+    # Major and minor releases (i.e x.0.0 and x.y.0) prior to 3.3.0 use
+    # a different naming scheme.
+
+    - PYTHON: "C:\\Python270"
+      PYTHON_VERSION: "2.7.0"
+      PYTHON_ARCH: "32"
+
+    - PYTHON: "C:\\Python270-x64"
+      PYTHON_VERSION: "2.7.0"
+      PYTHON_ARCH: "64"
+
 install:
-  - set QT_DIR=%APPVEYOR_BUILD_FOLDER%\%QT_DIR_REL%
-  - set PYQT_DIR=%APPVEYOR_BUILD_FOLDER%\%PYQT_DIR_REL%
+  # If there is a newer build queued for the same PR, cancel this one.
+  # The AppVeyor 'rollout builds' option is supposed to serve the same
+  # purpose but it is problematic because it tends to cancel builds pushed
+  # directly to master instead of just PR builds (or the converse).
+  # credits: JuliaLang developers.
+  - ps: if ($env:APPVEYOR_PULL_REQUEST_NUMBER -and $env:APPVEYOR_BUILD_NUMBER -ne ((Invoke-RestMethod `
+        https://ci.appveyor.com/api/projects/$env:APPVEYOR_ACCOUNT_NAME/$env:APPVEYOR_PROJECT_SLUG/history?recordsNumber=50).builds | `
+        Where-Object pullRequestId -eq $env:APPVEYOR_PULL_REQUEST_NUMBER)[0].buildNumber) { `
+          throw "There are newer queued builds for this pull request, failing early." }
+  - ECHO "Filesystem root:"
+  - ps: "ls \"C:/\""
 
-  # (a) setup msys2+mingw 64 (caching MSYS2 takes more time than installing it)
-  - echo "Setting up msys2 mingw 64 environment" & call ./ci_tools/setup_msys.bat
+  - ECHO "Installed SDKs:"
+  - ps: "ls \"C:/Program Files/Microsoft SDKs/Windows\""
 
-  # (b) setup conda, see  https://www.appveyor.com/docs/build-environment/#miniconda and http://help.appveyor.com/discussions/questions/6802-appveyor-with-conda
-  - "set PATH=%MINICONDA%;%MINICONDA%\\Scripts;%PATH%"
-  - conda config --set always_yes yes --set changeps1 no
-  # - conda update -q conda NO !!!!  #  conda info -a  # Use this to debug conda
+  # Install Python (from the official .msi of https://python.org) and pip when
+  # not already installed.
+  - ps: if (-not(Test-Path($env:PYTHON))) { & appveyor\install.ps1 }
 
-  # (c) base conda environment
-  - conda create -n envswitch python=%PYTHON_VERSION%
-  - activate envswitch
-  - conda install "python=%PYTHON_VERSION%" "sip" "pip>=9.0.1" "setuptools=36" -q
+  # Prepend newly installed Python to the PATH of this build (this cannot be
+  # done from inside the powershell script as it would require to restart
+  # the parent CMD process).
+  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
 
-  # (d) Compile and install Qt if needed (if no cache available)
-  - if not exist %QT_DIR%\bin\Qt5Core.dll (
-      echo "No cache found, building qt" &
-      call ./ci_tools/build_install_qt.bat
-    ) else (
-      echo "Found existing cache in %QT_DIR%" &
-      dir %QT_DIR%
-    )
-  - echo "Adding Qt to PATH" & set PATH=%QT_DIR%/bin;%PATH%
+  # Check that we have the expected version and architecture for Python
+  - "python --version"
+  - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
 
-  # (e) Compile PyQt if needed (if no cache available)
-  # Note: conda should be BEFORE MSYS2 in path for that
-  - if not exist %PYQT_DIR%\QtGui\QtGui.pyd (
-      echo "No cache found, building pyqt" &
-      RMDIR /S /Q %PYQT_DIR% &
-      call ./ci_tools/build_pyqt.bat
-    ) else (
-      echo "Found existing cache in %PYQT_DIR%" &
-      dir %PYQT_DIR%
-    )
-  - echo "Installing PyQt to python site-packages" & cd "%PYQT_DIR%" & mingw32-make -j 4 install
+  # Upgrade to the latest version of pip to avoid it displaying warnings
+  # about it being out of date.
+  - "python -m pip install --upgrade pip"
 
-build: off
+  # Install the build dependencies of the project. If some dependencies contain
+  # compiled extensions and are not provided as pre-built wheel packages,
+  # pip will build them from source using the MSVC compiler matching the
+  # target Python version and architecture
+  - "%CMD_IN_ENV% pip install -r dev-requirements.txt"
+
+build_script:
+  # Build the compiled extension
+  - "%CMD_IN_ENV% python setup.py build"
 
 test_script:
+  # Run the project tests and store results in .xml log
   - python -m unittest tests.windows.test_canda_windows.CandaCoreTest
