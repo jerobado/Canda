@@ -27,5 +27,20 @@ class CandaDialogTest(unittest.TestCase):
         self.assertEqual(test_result, expected_result)
 
 
+class CandaCoreTest(unittest.TestCase):
+    """ Testing only canda.py """
+
+    def setUp(self) -> None:
+        from canda.core import canda
+        self.canda = canda
+
+    def test_MASTER_KEY_if_equal(self):
+        """ Test if MASTER_KEY is equal to 'masterkey' """
+
+        result = self.canda.MASTER_KEY
+        expected = 'masterkey'
+        self.assertEqual(expected, result, 'discrepancy in masterkey ')
+
+
 if __name__ == '__main__':
     unittest.main()
