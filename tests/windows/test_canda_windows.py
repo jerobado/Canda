@@ -62,6 +62,18 @@ class CandaCoreTest(unittest.TestCase):
         expected = 'masterkey'
         self.assertEqual(expected, result, 'discrepancy in masterkey ')
 
+    def test_login_function_return_true(self):
+        """ Test if login function returns True if 'masterkey' matches """
+
+        result = self.canda.login('masterkey')
+        self.assertTrue(result)
+
+    def test_login_function_return_false(self):
+        """ Test if login function returns False if 'masterkey' does not match """
+
+        result = self.canda.login('xxx')
+        self.assertFalse(result)
+
 
 if __name__ == '__main__':
     unittest.main()
