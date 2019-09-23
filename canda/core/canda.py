@@ -8,6 +8,14 @@ def _master_key():
     return 'masterkey'
 
 
+def login(key):
+
+    if key == MASTER_KEY:
+        return True
+    else:
+        return False
+
+
 MASTER_KEY = _master_key()
 
 
