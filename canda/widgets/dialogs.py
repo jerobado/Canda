@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import (QDialog,
                              QVBoxLayout)
 
 from canda import __version__
+from canda.core import canda
 
 
 class LoginDialog(QDialog):
@@ -14,7 +15,7 @@ class LoginDialog(QDialog):
     def __init__(self, parent=None):
 
         super().__init__(parent)
-        self.masterkey = 'masterkey'
+        self.masterkey = canda.MASTER_KEY
         self._widgets()
         self._properties()
         self._layouts()
@@ -52,13 +53,15 @@ class LoginDialog(QDialog):
     def verify(self, unverified_key):
         """ Verify master key. """
 
-        if unverified_key == self.masterkey:
-            print('Verified!')
+        verified = canda.login(unverified_key)
+        if verified:
+            print('Verified. Enjoy your day!')
             self.accept()
             return True
         else:
+            self.loginLineEdit.clear()
             print('Master key does not match. Try again.')
-            return 0
+            return False
 
     def resizeEvent(self, event):
 
@@ -70,7 +73,7 @@ class LoginDialog(QDialog):
             self.close()
 
         if event.key() == Qt.Key_Return:
-            print('validating master key...')
+            print('Validating key...')
             self.verify(self.loginLineEdit.text())
 
 
