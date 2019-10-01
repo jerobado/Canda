@@ -60,7 +60,7 @@ class CandaCoreTest(unittest.TestCase):
 
         result = self.canda.MASTER_KEY
         expected = 'masterkey'
-        self.assertEqual(expected, result, 'discrepancy in masterkey ')
+        self.assertEqual(result, expected, 'discrepancy in masterkey ')
 
     def test_login_function_return_true(self):
         """ Test if login function returns True if 'masterkey' matches """
@@ -73,6 +73,13 @@ class CandaCoreTest(unittest.TestCase):
 
         result = self.canda.login('xxx')
         self.assertFalse(result)
+
+    def test_set_masterkey_function_return_equal(self):
+        """ Test if set_masterkey(key) will change the default masterkey """
+
+        result = self.canda.set_masterkey('freshmasterkey')
+        expected = 'freshmasterkey'
+        self.assertEqual(result, expected)
 
 
 if __name__ == '__main__':

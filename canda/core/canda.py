@@ -1,5 +1,7 @@
 """ Core operation of Canda """
 
+__version__ = 0.1
+
 
 def _master_key():
 
@@ -14,6 +16,11 @@ def login(key):
         return True
     else:
         return False
+
+
+def set_masterkey(key):
+
+    return key
 
 
 MASTER_KEY = _master_key()
