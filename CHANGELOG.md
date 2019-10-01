@@ -1,7 +1,7 @@
 # CHANGELOG
 
 ### **0.1**
-###### Release Date: 1 Oct 2019
+###### Release Date: 31 Oct 2019
 
 * Benefits
     * Easily retrieve login credentials of online accounts
