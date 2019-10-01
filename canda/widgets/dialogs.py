@@ -4,10 +4,16 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QDialog,
                              QLineEdit,
                              QLabel,
-                             QVBoxLayout)
+                             QVBoxLayout,
+                             QHBoxLayout,
+                             QListView,
+                             QListWidget,
+                             QTextEdit)
+
 
 from canda import __version__
 from canda.core import canda
+from canda.data import constant
 
 
 class LoginDialog(QDialog):
@@ -89,15 +95,42 @@ class MainDialog(QDialog):
 
     def _widgets(self):
 
-        ...
+        self.recordLabel = QLabel()
+        self.detailsLabel = QLabel()
+        self.recordListWidget = QListWidget()
+        self.detailsTextEdit = QTextEdit()
 
     def _properties(self):
 
         self.setWindowTitle('Canada - Password Manager')
+        self.setObjectName('MainDialog')
+
+        self.recordLabel.setText('Records:')
+        self.recordLabel.setObjectName('recordLabel')
+
+        self.recordListWidget.setObjectName('recordListView')
+        self.recordListWidget.insertItems(0, constant.RECORDS)  # [] TODO: use QListView
+
+        self.detailsLabel.setText('Details:')
+        self.detailsLabel.setObjectName('detailsLabel')
+
+        self.detailsTextEdit.setObjectName('detailsTextEdit')
 
     def _layouts(self):
 
-        ...
+        records_col = QVBoxLayout()
+        records_col.addWidget(self.recordLabel)
+        records_col.addWidget(self.recordListWidget)
+
+        details_col = QVBoxLayout()
+        details_col.addWidget(self.detailsLabel)
+        details_col.addWidget(self.detailsTextEdit)
+
+        combined_row = QHBoxLayout()
+        combined_row.addLayout(records_col)
+        combined_row.addLayout(details_col)
+
+        self.setLayout(combined_row)
 
     def _connections(self):
 
