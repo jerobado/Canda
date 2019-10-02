@@ -102,14 +102,18 @@ class MainDialog(QDialog):
 
     def _properties(self):
 
-        self.setWindowTitle('Canada - Password Manager')
+        self.setWindowTitle('Canda - Password Manager')
         self.setObjectName('MainDialog')
 
         self.recordLabel.setText('Records:')
         self.recordLabel.setObjectName('recordLabel')
 
         self.recordListWidget.setObjectName('recordListView')
-        self.recordListWidget.insertItems(0, constant.RECORDS)  # [] TODO: use QListView
+        # self.recordListWidget.insertItems(0, constant.RECORDS)  # [] TODO: use QListView
+
+        # TEST: inserting using for loop
+        for index, value in enumerate(constant.RECORDS):
+            self.recordListWidget.insertItem(index, constant.RECORDS[index]['account'])
 
         self.detailsLabel.setText('Details:')
         self.detailsLabel.setObjectName('detailsLabel')
@@ -134,4 +138,13 @@ class MainDialog(QDialog):
 
     def _connections(self):
 
-        ...
+        self.recordListWidget.itemClicked.connect(self.on_recordListWidget_itemClicked)
+
+    def on_recordListWidget_itemClicked(self):
+
+        current_row = self.recordListWidget.currentRow()
+        selected_record_dict = constant.RECORDS[current_row]
+        result = constant.DETAILS_TEMPLATE.substitute(selected_record_dict)
+
+        self.detailsTextEdit.setPlainText(result)
+
