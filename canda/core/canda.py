@@ -18,6 +18,11 @@ def login(key):
         return False
 
 
+def add_record(username, password, account):
+
+    return {'username': username, 'password': password, 'account': account}
+
+
 def set_masterkey(key):
 
     return key

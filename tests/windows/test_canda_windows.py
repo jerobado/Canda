@@ -81,6 +81,17 @@ class CandaCoreTest(unittest.TestCase):
         expected = 'freshmasterkey'
         self.assertEqual(result, expected)
 
+    def test_add_record_function_return_dict(self):
+        """ Test if add_record will return a dictionary """
+
+        result = self.canda.add_record(username='alcoholuser',
+                                       password='RheaBrand2222',
+                                       account='Healthway')
+        expected = {'username': 'alcoholuser',
+                    'password': 'RheaBrand2222',
+                    'account': 'Healthway'}
+        self.assertDictEqual(result, expected)
+
 
 if __name__ == '__main__':
     unittest.main()
