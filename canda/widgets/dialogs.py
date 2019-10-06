@@ -8,7 +8,8 @@ from PyQt5.QtWidgets import (QDialog,
                              QHBoxLayout,
                              QListView,
                              QListWidget,
-                             QTextEdit)
+                             QTextEdit,
+                             QPushButton)
 
 
 from canda import __version__
@@ -97,8 +98,12 @@ class MainDialog(QDialog):
 
         self.recordLabel = QLabel()
         self.detailsLabel = QLabel()
+        self.buttonsLabel = QLabel()
         self.recordListWidget = QListWidget()
         self.detailsTextEdit = QTextEdit()
+        self.addPushButton = QPushButton()
+        self.updatePushButton = QPushButton()
+        self.deletePushButton = QPushButton()
 
     def _properties(self):
 
@@ -120,6 +125,17 @@ class MainDialog(QDialog):
 
         self.detailsTextEdit.setObjectName('detailsTextEdit')
 
+        self.addPushButton.setObjectName('addPushButton')
+        self.addPushButton.setText('&Add')
+
+        self.updatePushButton.setObjectName('updatePushButton')
+        self.updatePushButton.setText('&Update')
+        self.updatePushButton.setEnabled(False)
+
+        self.deletePushButton.setObjectName('deletePushButton')
+        self.deletePushButton.setText('&Delete')
+        self.deletePushButton.setEnabled(False)
+
     def _layouts(self):
 
         records_col = QVBoxLayout()
@@ -130,15 +146,26 @@ class MainDialog(QDialog):
         details_col.addWidget(self.detailsLabel)
         details_col.addWidget(self.detailsTextEdit)
 
+        buttons_col = QVBoxLayout()
+        buttons_col.addWidget(self.buttonsLabel)    # filler widget
+        buttons_col.addWidget(self.addPushButton)
+        buttons_col.addWidget(self.updatePushButton)
+        buttons_col.addWidget(self.deletePushButton)
+        buttons_col.addStretch()
+
         combined_row = QHBoxLayout()
         combined_row.addLayout(records_col)
         combined_row.addLayout(details_col)
+        combined_row.addLayout(buttons_col)
 
         self.setLayout(combined_row)
 
     def _connections(self):
 
         self.recordListWidget.itemClicked.connect(self.on_recordListWidget_itemClicked)
+        self.addPushButton.clicked.connect(self.on_addPushButton_clicked)
+        self.updatePushButton.clicked.connect(self.on_updatePushButton_clicked)
+        self.deletePushButton.clicked.connect(self.on_deletePushButton_clicked)
 
     def on_recordListWidget_itemClicked(self):
 
@@ -148,3 +175,89 @@ class MainDialog(QDialog):
 
         self.detailsTextEdit.setPlainText(result)
 
+    def on_addPushButton_clicked(self):
+
+        dialog = AddDialog()
+        if dialog.exec() == AddDialog.Accepted:
+            new_record = canda.add_record(username='alcoholuser',
+                                          password='RheaBrand2222',
+                                          account='Healthway')
+            constant.RECORDS.append(new_record)
+
+            insert_at = len(constant.RECORDS) - 1
+            indentifier = constant.RECORDS[insert_at]['account']
+            self.recordListWidget.insertItem(insert_at, indentifier)
+
+    def on_updatePushButton_clicked(self):
+
+        print('update')
+
+    def on_deletePushButton_clicked(self):
+
+        print('delete')
+
+    def keyPressEvent(self, event):
+
+        if event.modifiers() & Qt.ControlModifier and event.key() == Qt.Key_Q:
+            self.close()
+
+
+class AddDialog(QDialog):
+
+    def __init__(self, parent=None):
+
+        super().__init__(parent)
+        self._widgets()
+        self._properties()
+        self._layouts()
+        self._connections()
+
+    def _widgets(self):
+
+        self.usernameLabel = QLabel()
+        self.passwordLabel = QLabel()
+        self.accountLabel = QLabel()
+        self.usernameLineEdit = QLineEdit()
+        self.passwordLineEdit = QLineEdit()
+        self.accountLineEdit = QLineEdit()
+        self.addPushButton = QPushButton()
+
+    def _properties(self):
+
+        self.usernameLabel.setText('Username:')
+        self.passwordLabel.setText('Password:')
+        self.accountLabel.setText('Account:')
+
+        self.addPushButton.setText('&Add')
+
+        self.setWindowTitle('Add record - Canda')
+
+    def _layouts(self):
+
+        row_username = QHBoxLayout()
+        row_username.addWidget(self.usernameLabel)
+        row_username.addWidget(self.usernameLineEdit)
+
+        row_password = QHBoxLayout()
+        row_password.addWidget(self.passwordLabel)
+        row_password.addWidget(self.passwordLineEdit)
+
+        row_account = QHBoxLayout()
+        row_account.addWidget(self.accountLabel)
+        row_account.addWidget(self.accountLineEdit)
+
+        row_button = QHBoxLayout()
+        row_button.addStretch()
+        row_button.addWidget(self.addPushButton)
+
+        col_widgets = QVBoxLayout()
+        col_widgets.addLayout(row_username)
+        col_widgets.addLayout(row_password)
+        col_widgets.addLayout(row_account)
+        col_widgets.addLayout(row_button)
+
+        self.setLayout(col_widgets)
+
+    def _connections(self):
+
+        self.addPushButton.clicked.connect(self.accept)
