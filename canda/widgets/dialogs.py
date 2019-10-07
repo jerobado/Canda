@@ -38,7 +38,7 @@ class LoginDialog(QDialog):
         self.loginLineEdit.setPlaceholderText('Enter master key here')
         self.loginLineEdit.setEchoMode(QLineEdit.Password)
 
-        self.setWindowTitle(f'Canda {__version__}')
+        self.setWindowTitle(f'Login - Canda {__version__}')
         self.resize(402, 61)
 
     def _layouts(self):
@@ -107,7 +107,7 @@ class MainDialog(QDialog):
 
     def _properties(self):
 
-        self.setWindowTitle('Canda - Password Manager')
+        self.setWindowTitle(f'Password Manager - Canda {__version__}')
         self.setObjectName('MainDialog')
 
         self.recordLabel.setText('Records:')
@@ -179,9 +179,14 @@ class MainDialog(QDialog):
 
         dialog = AddDialog()
         if dialog.exec() == AddDialog.Accepted:
-            new_record = canda.add_record(username='alcoholuser',
-                                          password='RheaBrand2222',
-                                          account='Healthway')
+
+            username = dialog.usernameLineEdit.text()
+            password = dialog.passwordLineEdit.text()
+            account = dialog.accountLineEdit.text()
+
+            new_record = canda.add_record(username=username,
+                                          password=password,
+                                          account=account)
             constant.RECORDS.append(new_record)
 
             insert_at = len(constant.RECORDS) - 1
@@ -228,7 +233,12 @@ class AddDialog(QDialog):
         self.passwordLabel.setText('Password:')
         self.accountLabel.setText('Account:')
 
+        self.usernameLineEdit.setObjectName('usernameLineEdit')
+        self.passwordLineEdit.setObjectName('passwordLineEdit')     # [] TODO: conceal the lineedit
+        self.accountLineEdit.setObjectName('accountLineEdit')
+
         self.addPushButton.setText('&Add')
+        self.addPushButton.setEnabled(False)
 
         self.setWindowTitle('Add record - Canda')
 
@@ -250,6 +260,7 @@ class AddDialog(QDialog):
         row_button.addStretch()
         row_button.addWidget(self.addPushButton)
 
+        # [] TODO: change this to grid layout
         col_widgets = QVBoxLayout()
         col_widgets.addLayout(row_username)
         col_widgets.addLayout(row_password)
@@ -261,3 +272,19 @@ class AddDialog(QDialog):
     def _connections(self):
 
         self.addPushButton.clicked.connect(self.accept)
+        self.usernameLineEdit.textChanged.connect(self.on_LineEdits_textChanged)
+        self.passwordLineEdit.textChanged.connect(self.on_LineEdits_textChanged)
+        self.accountLineEdit.textChanged.connect(self.on_LineEdits_textChanged)
+
+    def on_LineEdits_textChanged(self):
+
+        sender = self.sender()
+        print(sender.objectName())
+
+        with_text = [self.usernameLineEdit.text(), self.passwordLineEdit.text(), self.accountLineEdit.text()]
+
+        if all(with_text):
+            print(with_text)
+            self.addPushButton.setEnabled(True)
+        else:
+            self.addPushButton.setEnabled(False)
