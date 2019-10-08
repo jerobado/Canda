@@ -92,6 +92,19 @@ class CandaCoreTest(unittest.TestCase):
                     'account': 'Healthway'}
         self.assertDictEqual(result, expected)
 
+    def test_remove_record_function_return_dict(self):
+        """ Test if remove_record will return the deleted item in the list """
+
+        SAMPLE_LIST = [{'username': 'pixie@gmail.com', 'password': 'helloworld1234', 'account': 'GMail'},
+                       {'username': 'hungrypoet_32@yahoo.com', 'password': 'novels111', 'account': 'Yahoo'},
+                       {'username': 'blandsword@microsoft.com', 'password': 'helloworld1234', 'account': 'Microsoft'}]
+
+        result = self.canda.remove_record(1, SAMPLE_LIST)
+        expected = {'username': 'hungrypoet_32@yahoo.com',
+                    'password': 'novels111',
+                    'account': 'Yahoo'}
+        self.assertDictEqual(result, expected)
+
 
 if __name__ == '__main__':
     unittest.main()

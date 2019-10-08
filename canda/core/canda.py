@@ -23,6 +23,12 @@ def add_record(username, password, account):
     return {'username': username, 'password': password, 'account': account}
 
 
+def remove_record(index, record):
+    """ Returns removed item in the record at the given index """
+
+    return record.pop(index)
+
+
 def set_masterkey(key):
 
     return key
