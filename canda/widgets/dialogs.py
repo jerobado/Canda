@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (QDialog,
                              QLabel,
                              QVBoxLayout,
                              QHBoxLayout,
+                             QGridLayout,
                              QListView,
                              QListWidget,
                              QTextEdit,
@@ -169,11 +170,15 @@ class MainDialog(QDialog):
 
     def on_recordListWidget_itemClicked(self):
 
+        # to display the details of the selected item
         current_row = self.recordListWidget.currentRow()
         selected_record_dict = constant.RECORDS[current_row]
         result = constant.DETAILS_TEMPLATE.substitute(selected_record_dict)
-
         self.detailsTextEdit.setPlainText(result)
+
+        # to enable the Delete button
+        if not self.deletePushButton.isEnabled():
+            self.deletePushButton.setEnabled(True)
 
     def on_addPushButton_clicked(self):
 
@@ -199,7 +204,9 @@ class MainDialog(QDialog):
 
     def on_deletePushButton_clicked(self):
 
-        print('delete')
+        # [] TODO: implement the 'Delete' button
+        selected_record = self.recordListWidget.currentRow()
+        print(f'do you want to delete {constant.RECORDS[selected_record]}?')
 
     def keyPressEvent(self, event):
 
@@ -219,9 +226,9 @@ class AddDialog(QDialog):
 
     def _widgets(self):
 
-        self.usernameLabel = QLabel()
-        self.passwordLabel = QLabel()
-        self.accountLabel = QLabel()
+        self.usernameLabel = QLabel('&Username')
+        self.passwordLabel = QLabel('&Password')
+        self.accountLabel = QLabel('A&ccount')
         self.usernameLineEdit = QLineEdit()
         self.passwordLineEdit = QLineEdit()
         self.accountLineEdit = QLineEdit()
@@ -229,18 +236,25 @@ class AddDialog(QDialog):
 
     def _properties(self):
 
-        self.usernameLabel.setText('Username:')
-        self.passwordLabel.setText('Password:')
-        self.accountLabel.setText('Account:')
-
         self.usernameLineEdit.setObjectName('usernameLineEdit')
-        self.passwordLineEdit.setObjectName('passwordLineEdit')     # [] TODO: conceal the lineedit
+
+        self.usernameLabel.setBuddy(self.usernameLineEdit)
+
+        self.passwordLabel.setBuddy(self.passwordLineEdit)
+
+        self.passwordLineEdit.setObjectName('passwordLineEdit')
+        self.passwordLineEdit.setEchoMode(QLineEdit.Password)
+
         self.accountLineEdit.setObjectName('accountLineEdit')
+
+        self.accountLabel.setBuddy(self.accountLineEdit)
 
         self.addPushButton.setText('&Add')
         self.addPushButton.setEnabled(False)
 
+        self.setObjectName('AddDialog')
         self.setWindowTitle('Add record - Canda')
+        self.resize(327, 123)
 
     def _layouts(self):
 
@@ -261,13 +275,24 @@ class AddDialog(QDialog):
         row_button.addWidget(self.addPushButton)
 
         # [] TODO: change this to grid layout
+        grid = QGridLayout()
+        grid.addWidget(self.usernameLabel, 0, 0)
+        grid.addWidget(self.usernameLineEdit, 0, 1)
+        grid.addWidget(self.passwordLabel, 1, 0)
+        grid.addWidget(self.passwordLineEdit, 1, 1)
+        grid.addWidget(self.accountLabel, 2, 0)
+        grid.addWidget(self.accountLineEdit, 2, 1)
+
         col_widgets = QVBoxLayout()
-        col_widgets.addLayout(row_username)
-        col_widgets.addLayout(row_password)
-        col_widgets.addLayout(row_account)
+        col_widgets.addLayout(grid)
         col_widgets.addLayout(row_button)
 
+        # self.setLayout(grid)
         self.setLayout(col_widgets)
+
+    def resizeEvent(self, event):
+
+        print(f'{self.objectName()}: {self.width()} x {self.height()}')
 
     def _connections(self):
 
