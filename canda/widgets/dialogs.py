@@ -10,7 +10,8 @@ from PyQt5.QtWidgets import (QDialog,
                              QListView,
                              QListWidget,
                              QTextEdit,
-                             QPushButton)
+                             QPushButton,
+                             QMessageBox)
 
 
 from canda import __version__
@@ -105,6 +106,7 @@ class MainDialog(QDialog):
         self.addPushButton = QPushButton()
         self.updatePushButton = QPushButton()
         self.deletePushButton = QPushButton()
+        self.questionMessageBox = QMessageBox()
 
     def _properties(self):
 
@@ -164,24 +166,27 @@ class MainDialog(QDialog):
     def _connections(self):
 
         self.recordListWidget.itemClicked.connect(self.on_recordListWidget_itemClicked)
+        # self.recordListWidget.currentRowChanged.connect(self.on_recordListWidget_itemClicked) # [] TODO: review effect on deletePushButton
         self.addPushButton.clicked.connect(self.on_addPushButton_clicked)
         self.updatePushButton.clicked.connect(self.on_updatePushButton_clicked)
         self.deletePushButton.clicked.connect(self.on_deletePushButton_clicked)
 
     def on_recordListWidget_itemClicked(self):
 
-        # to display the details of the selected item
+        # To display the details of the selected item
         current_row = self.recordListWidget.currentRow()
         selected_record_dict = constant.RECORDS[current_row]
         result = constant.DETAILS_TEMPLATE.substitute(selected_record_dict)
         self.detailsTextEdit.setPlainText(result)
 
-        # to enable the Delete button
+        # To enable the Delete button
         if not self.deletePushButton.isEnabled():
             self.deletePushButton.setEnabled(True)
 
+
     def on_addPushButton_clicked(self):
 
+        # [] TODO: after adding, the current selection should point to the latest item
         dialog = AddDialog()
         if dialog.exec() == AddDialog.Accepted:
 
@@ -197,6 +202,7 @@ class MainDialog(QDialog):
             insert_at = len(constant.RECORDS) - 1
             indentifier = constant.RECORDS[insert_at]['account']
             self.recordListWidget.insertItem(insert_at, indentifier)
+            self.recordListWidget.setCurrentRow(insert_at)
 
     def on_updatePushButton_clicked(self):
 
@@ -204,9 +210,20 @@ class MainDialog(QDialog):
 
     def on_deletePushButton_clicked(self):
 
-        # [] TODO: implement the 'Delete' button
-        selected_record = self.recordListWidget.currentRow()
-        print(f'do you want to delete {constant.RECORDS[selected_record]}?')
+        current_row = self.recordListWidget.currentRow()
+        current_record = constant.RECORDS[current_row]
+        message = f'Do you want to delete {current_record}?'
+        result = QMessageBox.question(self, 'Before you do that...', message)
+
+        # If the user hit Yes
+        if result == 16384:
+            deleted_record = canda.remove_record(current_row, constant.RECORDS)
+            self.recordListWidget.takeItem(current_row)
+            print(f'{deleted_record} deleted.')
+
+        # Disable the Delete button if the record list hits zero
+        if self.recordListWidget.count() == 0:
+            self.deletePushButton.setEnabled(False)
 
     def keyPressEvent(self, event):
 
