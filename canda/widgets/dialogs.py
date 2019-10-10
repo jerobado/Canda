@@ -166,12 +166,14 @@ class MainDialog(QDialog):
     def _connections(self):
 
         self.recordListWidget.itemClicked.connect(self.on_recordListWidget_itemClicked)
-        # self.recordListWidget.currentRowChanged.connect(self.on_recordListWidget_itemClicked) # [] TODO: review effect on deletePushButton
+        # self.recordListWidget.currentRowChanged.connect(self.on_recordListWidget_currentRowChanged) # tricky to use but with potential
         self.addPushButton.clicked.connect(self.on_addPushButton_clicked)
         self.updatePushButton.clicked.connect(self.on_updatePushButton_clicked)
         self.deletePushButton.clicked.connect(self.on_deletePushButton_clicked)
 
     def on_recordListWidget_itemClicked(self):
+
+        print('click at ', self.recordListWidget.currentRow())
 
         # To display the details of the selected item
         current_row = self.recordListWidget.currentRow()
@@ -183,6 +185,9 @@ class MainDialog(QDialog):
         if not self.deletePushButton.isEnabled():
             self.deletePushButton.setEnabled(True)
 
+    def on_recordListWidget_currentRowChanged(self):
+
+        ...
 
     def on_addPushButton_clicked(self):
 
@@ -204,6 +209,15 @@ class MainDialog(QDialog):
             self.recordListWidget.insertItem(insert_at, indentifier)
             self.recordListWidget.setCurrentRow(insert_at)
 
+            # Update detailsTextEdit to reflect the current selected row
+            new_current_row = self.recordListWidget.currentRow()
+            new_selected_record = constant.RECORDS[new_current_row]
+            result = constant.DETAILS_TEMPLATE.substitute(new_selected_record)
+            self.detailsTextEdit.setPlainText(result)
+
+            if not self.deletePushButton.isEnabled():
+                self.deletePushButton.setEnabled(True)
+
     def on_updatePushButton_clicked(self):
 
         print('update')
@@ -212,7 +226,7 @@ class MainDialog(QDialog):
 
         current_row = self.recordListWidget.currentRow()
         current_record = constant.RECORDS[current_row]
-        message = f'Do you want to delete {current_record}?'
+        message = f'Do you want to delete you account in \'{current_record["account"]}\'?'
         result = QMessageBox.question(self, 'Before you do that...', message)
 
         # If the user hit Yes
@@ -221,9 +235,17 @@ class MainDialog(QDialog):
             self.recordListWidget.takeItem(current_row)
             print(f'{deleted_record} deleted.')
 
-        # Disable the Delete button if the record list hits zero
-        if self.recordListWidget.count() == 0:
+        # Update detailsTextEdit to reflect the current selected row as long as the recordList is not empty, -1 is empty
+        if not self.recordListWidget.currentRow() == -1:
+            new_current_row = self.recordListWidget.currentRow()
+            new_selected_record = constant.RECORDS[new_current_row]
+            result = constant.DETAILS_TEMPLATE.substitute(new_selected_record)
+            self.detailsTextEdit.setPlainText(result)
+
+        # Disable the Delete button and clear the details text edit if the record list hits zero
+        elif self.recordListWidget.count() == 0:
             self.deletePushButton.setEnabled(False)
+            self.detailsTextEdit.clear()
 
     def keyPressEvent(self, event):
 
