@@ -181,8 +181,9 @@ class MainDialog(QDialog):
         result = constant.DETAILS_TEMPLATE.substitute(selected_record_dict)
         self.detailsTextEdit.setPlainText(result)
 
-        # To enable the Delete button
-        if not self.deletePushButton.isEnabled():
+        # To enable the Update and Delete button
+        if not self.deletePushButton.isEnabled() and not self.updatePushButton.isEnabled():
+            self.updatePushButton.setEnabled(True)
             self.deletePushButton.setEnabled(True)
 
     def on_recordListWidget_currentRowChanged(self):
@@ -215,12 +216,37 @@ class MainDialog(QDialog):
             result = constant.DETAILS_TEMPLATE.substitute(new_selected_record)
             self.detailsTextEdit.setPlainText(result)
 
-            if not self.deletePushButton.isEnabled():
+            if not self.deletePushButton.isEnabled() and not self.updatePushButton.isEnabled():
+                self.updatePushButton.setEnabled(True)
                 self.deletePushButton.setEnabled(True)
 
     def on_updatePushButton_clicked(self):
 
-        print('update')
+        dialog = UpdateDialog()
+        # get values of selected item
+        current_row = self.recordListWidget.currentRow()
+        current_record = constant.RECORDS[current_row]
+
+        # display retrieved values to Update dialog
+        dialog.usernameLineEdit.setText(current_record['username'])
+        dialog.passwordLineEdit.setText(current_record['password'])
+        dialog.accountLineEdit.setText(current_record['account'])
+
+        if dialog.exec() == UpdateDialog.Accepted:
+            new_record = {'username': dialog.usernameLineEdit.text(),
+                          'password': dialog.passwordLineEdit.text(),
+                          'account': dialog.accountLineEdit.text()}
+
+            canda.update_record(current_record, **new_record)
+
+            # Update detailsTextEdit to reflect the current selected row
+            new_current_row = self.recordListWidget.currentRow()
+            new_selected_record = constant.RECORDS[new_current_row]
+            result = constant.DETAILS_TEMPLATE.substitute(new_selected_record)
+            self.detailsTextEdit.setPlainText(result)
+
+            # [] TODO: update also the selected index in the recordsListWidget
+            print('updated')
 
     def on_deletePushButton_clicked(self):
 
@@ -242,8 +268,9 @@ class MainDialog(QDialog):
             result = constant.DETAILS_TEMPLATE.substitute(new_selected_record)
             self.detailsTextEdit.setPlainText(result)
 
-        # Disable the Delete button and clear the details text edit if the record list hits zero
+        # Disable the Update and Delete buttons and clear the details text edit if the record list hits zero
         elif self.recordListWidget.count() == 0:
+            self.updatePushButton.setEnabled(False)
             self.deletePushButton.setEnabled(False)
             self.detailsTextEdit.clear()
 
@@ -265,9 +292,9 @@ class AddDialog(QDialog):
 
     def _widgets(self):
 
-        self.usernameLabel = QLabel('&Username')
-        self.passwordLabel = QLabel('&Password')
-        self.accountLabel = QLabel('A&ccount')
+        self.usernameLabel = QLabel('&Username:')
+        self.passwordLabel = QLabel('&Password:')
+        self.accountLabel = QLabel('A&ccount:')
         self.usernameLineEdit = QLineEdit()
         self.passwordLineEdit = QLineEdit()
         self.accountLineEdit = QLineEdit()
@@ -313,7 +340,6 @@ class AddDialog(QDialog):
         row_button.addStretch()
         row_button.addWidget(self.addPushButton)
 
-        # [] TODO: change this to grid layout
         grid = QGridLayout()
         grid.addWidget(self.usernameLabel, 0, 0)
         grid.addWidget(self.usernameLineEdit, 0, 1)
@@ -352,3 +378,103 @@ class AddDialog(QDialog):
             self.addPushButton.setEnabled(True)
         else:
             self.addPushButton.setEnabled(False)
+
+
+class UpdateDialog(QDialog):
+
+    def __init__(self, parent=None):
+
+        super().__init__(parent)
+        self._widgets()
+        self._properties()
+        self._layouts()
+        self._connections()
+
+    def _widgets(self):
+
+        self.usernameLabel = QLabel('&Username:')
+        self.passwordLabel = QLabel('&Password:')
+        self.accountLabel = QLabel('A&ccount:')
+        self.usernameLineEdit = QLineEdit()
+        self.passwordLineEdit = QLineEdit()
+        self.accountLineEdit = QLineEdit()
+        self.updatePushButton = QPushButton()
+
+    def _properties(self):
+
+        self.usernameLineEdit.setObjectName('usernameLineEdit')
+
+        self.usernameLabel.setBuddy(self.usernameLineEdit)
+
+        self.passwordLabel.setBuddy(self.passwordLineEdit)
+
+        self.passwordLineEdit.setObjectName('passwordLineEdit')
+        self.passwordLineEdit.setEchoMode(QLineEdit.Password)
+
+        self.accountLineEdit.setObjectName('accountLineEdit')
+
+        self.accountLabel.setBuddy(self.accountLineEdit)
+
+        self.updatePushButton.setText('&Update')
+        self.updatePushButton.setEnabled(False)
+
+        self.setObjectName('UpdateDialog')
+        self.setWindowTitle('Update record...')
+        self.resize(327, 123)
+
+    def _layouts(self):
+
+        row_username = QHBoxLayout()
+        row_username.addWidget(self.usernameLabel)
+        row_username.addWidget(self.usernameLineEdit)
+
+        row_password = QHBoxLayout()
+        row_password.addWidget(self.passwordLabel)
+        row_password.addWidget(self.passwordLineEdit)
+
+        row_account = QHBoxLayout()
+        row_account.addWidget(self.accountLabel)
+        row_account.addWidget(self.accountLineEdit)
+
+        row_button = QHBoxLayout()
+        row_button.addStretch()
+        row_button.addWidget(self.updatePushButton)
+
+        grid = QGridLayout()
+        grid.addWidget(self.usernameLabel, 0, 0)
+        grid.addWidget(self.usernameLineEdit, 0, 1)
+        grid.addWidget(self.passwordLabel, 1, 0)
+        grid.addWidget(self.passwordLineEdit, 1, 1)
+        grid.addWidget(self.accountLabel, 2, 0)
+        grid.addWidget(self.accountLineEdit, 2, 1)
+
+        col_widgets = QVBoxLayout()
+        col_widgets.addLayout(grid)
+        col_widgets.addLayout(row_button)
+
+        # self.setLayout(grid)
+        self.setLayout(col_widgets)
+
+    def resizeEvent(self, event):
+
+        print(f'{self.objectName()}: {self.width()} x {self.height()}')
+
+    def _connections(self):
+
+        self.updatePushButton.clicked.connect(self.accept)
+        self.usernameLineEdit.textChanged.connect(self.on_LineEdits_textChanged)
+        self.passwordLineEdit.textChanged.connect(self.on_LineEdits_textChanged)
+        self.accountLineEdit.textChanged.connect(self.on_LineEdits_textChanged)
+
+    def on_LineEdits_textChanged(self):
+
+        sender = self.sender()
+        print(sender.objectName())
+
+        with_text = [self.usernameLineEdit.text(), self.passwordLineEdit.text(), self.accountLineEdit.text()]
+
+        if all(with_text):
+            print(with_text)
+            self.updatePushButton.setEnabled(True)
+        else:
+            self.updatePushButton.setEnabled(False)
