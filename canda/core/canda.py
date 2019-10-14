@@ -23,6 +23,13 @@ def add_record(username, password, account):
     return {'username': username, 'password': password, 'account': account}
 
 
+def update_record(record, **kwargs):
+    """ Return the updated record based on the given **kwargs """
+
+    record.update(kwargs)
+    return record
+
+
 def remove_record(index, record):
     """ Returns removed item in the record at the given index """
 

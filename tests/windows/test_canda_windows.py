@@ -92,6 +92,51 @@ class CandaCoreTest(unittest.TestCase):
                     'account': 'Healthway'}
         self.assertDictEqual(result, expected)
 
+    def test_update_record_updates_one_pair(self):
+        """ Test if update_record will update the given dictionary """
+
+        sample_record = {'username': 'alcoholuser',
+                         'password': 'RheaBrand2222',
+                         'account': 'Healthway'}
+
+        sample_record2 = {'username': 'alcoholuser',
+                          'password': 'RheaBrand2222',
+                          'account': 'Healthway'}
+
+        sample_record3 = {'username': 'alcoholuser',
+                          'password': 'RheaBrand2222',
+                          'account': 'Healthway'}
+
+        sample_kwargs = {'username': 'new_alcoholuser'}
+
+        sample_kwargs2 = {'username': 'new_alcoholuser',
+                          'password': 'BrandedAlcohol'}
+
+        sample_kwargs3 = {'username': 'never_new_alcoholuser',
+                          'password': 'BrandedAlcohol',
+                          'account': 'agos'}
+
+        result = self.canda.update_record(sample_record, **sample_kwargs)
+        result2 = self.canda.update_record(sample_record2, **sample_kwargs2)
+        result3 = self.canda.update_record(sample_record3, **sample_kwargs3)
+
+        expected = {'username': 'new_alcoholuser',
+                    'password': 'RheaBrand2222',
+                    'account': 'Healthway'}
+
+        expected2 = {'username': 'new_alcoholuser',
+                     'password': 'BrandedAlcohol',
+                     'account': 'Healthway'}
+
+        expected3 = {'username': 'never_new_alcoholuser',
+                     'password': 'BrandedAlcohol',
+                     'account': 'agos'}
+
+        self.assertDictEqual(result, expected)
+        self.assertDictEqual(result2, expected2)
+        self.assertDictEqual(result3, expected3)
+
+
     def test_remove_record_function_return_dict(self):
         """ Test if remove_record will return the deleted item in the list """
 
