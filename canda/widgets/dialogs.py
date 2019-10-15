@@ -119,9 +119,11 @@ class MainDialog(QDialog):
         self.recordListWidget.setObjectName('recordListView')
         # self.recordListWidget.insertItems(0, constant.RECORDS)  # [] TODO: use QListView
 
-        # TEST: inserting using for loop
-        for index, value in enumerate(constant.RECORDS):
-            self.recordListWidget.insertItem(index, constant.RECORDS[index]['account'])
+        # [] TODO: use QSettings here to retrieve the data from the last session
+        if constant.RECORDS:
+            # TEST: inserting using for loop
+            for index, value in enumerate(constant.RECORDS):
+                self.recordListWidget.insertItem(index, constant.RECORDS[index]['account'])
 
         self.detailsLabel.setText('Details:')
         self.detailsLabel.setObjectName('detailsLabel')
@@ -245,7 +247,12 @@ class MainDialog(QDialog):
             result = constant.DETAILS_TEMPLATE.substitute(new_selected_record)
             self.detailsTextEdit.setPlainText(result)
 
-            # [] TODO: update also the selected index in the recordsListWidget
+            # Don't like this but it works, to be refactored soon
+            self.recordListWidget.clear()
+            for index, value in enumerate(constant.RECORDS):
+                self.recordListWidget.insertItem(index, constant.RECORDS[index]['account'])
+            self.recordListWidget.setCurrentRow(new_current_row)
+
             print('updated')
 
     def on_deletePushButton_clicked(self):
@@ -319,7 +326,7 @@ class AddDialog(QDialog):
         self.addPushButton.setEnabled(False)
 
         self.setObjectName('AddDialog')
-        self.setWindowTitle('Add record - Canda')
+        self.setWindowTitle('Add')
         self.resize(327, 123)
 
     def _layouts(self):
@@ -419,7 +426,7 @@ class UpdateDialog(QDialog):
         self.updatePushButton.setEnabled(False)
 
         self.setObjectName('UpdateDialog')
-        self.setWindowTitle('Update record...')
+        self.setWindowTitle('Update')
         self.resize(327, 123)
 
     def _layouts(self):
