@@ -1,6 +1,8 @@
 """ Core operation of Canda """
 
 from canda.data.constant import LOGIN_TOKEN
+from canda.data.constant import SALT
+
 
 __version__ = 0.1
 
@@ -15,30 +17,31 @@ def _master_key():
 def login2(key):
     """ Test login using cryptography library """
 
-    import base64
-    import os
-    from cryptography.fernet import Fernet
-    from cryptography.hazmat.backends import default_backend
-    from cryptography.hazmat.primitives import hashes
-    from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+    try:
+        import base64
+        from cryptography.fernet import Fernet
+        from cryptography.fernet import InvalidToken
+        from cryptography.hazmat.backends import default_backend
+        from cryptography.hazmat.primitives import hashes
+        from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
-    # for setting up new password
-    password = key.encode()
-    salt = os.urandom(16)
-    kdf = PBKDF2HMAC(algorithm=hashes.SHA256(),
-                     length=32,
-                     salt=salt,
-                     iterations=100000,
-                     backend=default_backend())
-    key = base64.urlsafe_b64encode(kdf.derive(password))
-    f = Fernet(key)
-    token = f.encrypt(b'password verified')
-    message = f.decrypt(token)
-    print('login2 - message:', message)
+        password = key.encode()
+        kdf = PBKDF2HMAC(algorithm=hashes.SHA256(),
+                         length=32,
+                         salt=SALT,
+                         iterations=100000,
+                         backend=default_backend())
+        key = base64.urlsafe_b64encode(kdf.derive(password))
+        f = Fernet(key)
+        message = f.decrypt(LOGIN_TOKEN)
+        print('login2 - message:', message)
 
-    if message == b'password verified':
-        return True
-    else:
+        if message == b'password verified':
+            print('holy @#$! we are now logging in using cryptography!')
+            return True
+
+    except InvalidToken:
+        print('not your password')
         return False
 
 
@@ -70,6 +73,25 @@ def remove_record(index, record):
 
 def set_masterkey(key):
 
+    return key
+
+
+def set_masterkey2(key):
+    """ Using cryptography to set the masterkey """
+
+    import base64
+    from cryptography.hazmat.backends import default_backend
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+
+    # for setting up new password
+    password = key.encode()
+    kdf = PBKDF2HMAC(algorithm=hashes.SHA256(),
+                     length=32,
+                     salt=SALT,
+                     iterations=100000,
+                     backend=default_backend())
+    key = base64.urlsafe_b64encode(kdf.derive(password))
     return key
 
 

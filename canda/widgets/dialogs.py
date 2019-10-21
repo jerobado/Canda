@@ -62,8 +62,8 @@ class LoginDialog(QDialog):
     def verify(self, unverified_key):
         """ Verify master key. """
 
-        verified = canda.login(unverified_key)
-        # verified = canda.login2(unverified_key)
+        # verified = canda.login(unverified_key)
+        verified = canda.login2(unverified_key)
         if verified:
             print('Verified. Enjoy your day!')
             self.accept()
