@@ -1,7 +1,8 @@
 """ Core operation of Canda """
 
-from canda.data.constant import LOGIN_TOKEN
-from canda.data.constant import SALT
+from canda.data.constant import (LOGIN_TOKEN,
+                                 SALT,
+                                 LOGIN_VERIFICATION_MESSAGE)
 
 
 __version__ = 0.1
@@ -34,14 +35,13 @@ def login2(key):
         key = base64.urlsafe_b64encode(kdf.derive(password))
         f = Fernet(key)
         message = f.decrypt(LOGIN_TOKEN)
-        print('login2 - message:', message)
 
-        if message == b'password verified':
-            print('holy @#$! we are now logging in using cryptography!')
+        if message == LOGIN_VERIFICATION_MESSAGE:
+            print('password verified')
             return True
 
     except InvalidToken:
-        print('not your password')
+        print('Invalid Token: password unverified, try again')
         return False
 
 
