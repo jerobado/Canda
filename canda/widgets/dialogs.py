@@ -34,11 +34,14 @@ class LoginDialog(QDialog):
 
         self.loginLabel = QLabel('Canda - Password Manager in the 21st Century')
         self.loginLineEdit = QLineEdit()
+        self.setmasterkeyLabel = QLabel('<a href="https://python.org">Set Master Key</a>')
 
     def _properties(self):
 
         self.loginLineEdit.setPlaceholderText('Enter master key here')
         self.loginLineEdit.setEchoMode(QLineEdit.Password)
+        self.setmasterkeyLabel.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        self.setmasterkeyLabel.setOpenExternalLinks(True)
 
         self.setWindowTitle(f'Login - Canda {__version__}')
         self.resize(402, 61)
@@ -48,6 +51,7 @@ class LoginDialog(QDialog):
         vbox = QVBoxLayout()
         vbox.addWidget(self.loginLabel)
         vbox.addWidget(self.loginLineEdit)
+        vbox.addWidget(self.setmasterkeyLabel)
 
         self.setLayout(vbox)
 
