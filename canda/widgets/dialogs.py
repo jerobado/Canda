@@ -1,6 +1,7 @@
 # Create dialogs here
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import (Qt,
+                          QSettings)
 from PyQt5.QtWidgets import (QDialog,
                              QLineEdit,
                              QLabel,
@@ -25,10 +26,50 @@ class LoginDialog(QDialog):
 
         super().__init__(parent)
         self.masterkey = canda.MASTER_KEY
+        self.settings = QSettings('jerobado', 'Canda')
+        self.INITIAL_RUN = None
+        self.SALT = None
+        self.LOGIN_TOKEN = None
+
+        # TEST: playing with QSettings
+        self._set_masterkey()
+        self._read_settings()
+
         self._widgets()
         self._properties()
         self._layouts()
         self._connections()
+
+    def _set_masterkey(self):
+        """ Set default master key. """
+
+        if self.INITIAL_RUN:
+            print('first setup of masterkey')
+            credentials = canda.set_masterkey3('defaultkey')
+            self.settings.setValue('SALT', credentials[1])
+            self.settings.setValue('LOGIN_TOKEN', credentials[2])
+            self.settings.setValue('INITIAL_RUN', False)
+            self.INITIAL_RUN = False
+        else:
+            print('you can use the masterkey you previously use')
+
+    def _read_settings(self):
+        """ Get restored last application settings. """
+
+        self.SALT = self.settings.value('SALT', self.SALT)
+        self.LOGIN_TOKEN = self.settings.value('LOGIN_TOKEN', self.LOGIN_TOKEN)
+        self.INITIAL_RUN = self.settings.value('INITIAL_RUN', self.INITIAL_RUN)
+
+        print('\non _read_settings() function')
+        print(f'self.SALT: {self.SALT}')
+        print(f'self.LOGIN_TOKEN: {self.LOGIN_TOKEN}')
+
+    def _write_settings(self):
+        """ Save new application settings. """
+
+        self.settings.setValue('SALT', self.SALT)
+        self.settings.setValue('LOGIN_TOKEN', self.LOGIN_TOKEN)
+        self.settings.setValue('INITIAL_RUN', self.INITIAL_RUN)
 
     def _widgets(self):
 
@@ -67,7 +108,8 @@ class LoginDialog(QDialog):
         """ Verify master key. """
 
         # verified = canda.login(unverified_key)
-        verified = canda.login2(unverified_key)
+        # verified = canda.login2(unverified_key)
+        verified = canda.login3(unverified_key, self.SALT, self.LOGIN_TOKEN)
         if verified:
             print('Verified. Enjoy your day!')
             self.accept()
@@ -76,6 +118,14 @@ class LoginDialog(QDialog):
             self.loginLineEdit.clear()
             print('Master key does not match. Try again.')
             return False
+
+    def hideEvent(self, *args, **kwargs):
+
+        self._write_settings()
+
+    def closeEvent(self, event):
+
+        print('im closed')
 
     def resizeEvent(self, event):
 
