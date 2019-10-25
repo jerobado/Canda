@@ -77,6 +77,11 @@ def login3(key, salt, token):
 
         if message == LOGIN_VERIFICATION_MESSAGE:
             print('password verified')
+            print('on login3')
+            print(f'\tkey: {key}')
+            print(f'\tsalt: {salt}')
+            print(f'\ttoken: {token}')
+
             return True
 
     except InvalidToken:
