@@ -27,13 +27,15 @@ class LoginDialog(QDialog):
         super().__init__(parent)
         self.masterkey = canda.MASTER_KEY
         self.settings = QSettings('jerobado', 'Canda')
-        self.INITIAL_RUN = None
+        # self.settings = QSettings()
+        # self.settings.clear()
+        self.INITIAL_RUN = True
         self.SALT = None
         self.LOGIN_TOKEN = None
 
         # TEST: playing with QSettings
-        self._set_masterkey()
         self._read_settings()
+        self._set_masterkey()
 
         self._widgets()
         self._properties()
@@ -43,13 +45,14 @@ class LoginDialog(QDialog):
     def _set_masterkey(self):
         """ Set default master key. """
 
+        print(self.INITIAL_RUN)
         if self.INITIAL_RUN:
             print('first setup of masterkey')
-            credentials = canda.set_masterkey3('defaultkey')
-            self.settings.setValue('SALT', credentials[1])
-            self.settings.setValue('LOGIN_TOKEN', credentials[2])
-            self.settings.setValue('INITIAL_RUN', False)
+            credentials = canda.set_masterkey3('defaultkeyx')
+            self.SALT = credentials[1]
+            self.LOGIN_TOKEN = credentials[2]
             self.INITIAL_RUN = False
+            print(f'INTIAL_RUN: {self.INITIAL_RUN}')
         else:
             print('you can use the masterkey you previously use')
 
@@ -58,7 +61,7 @@ class LoginDialog(QDialog):
 
         self.SALT = self.settings.value('SALT', self.SALT)
         self.LOGIN_TOKEN = self.settings.value('LOGIN_TOKEN', self.LOGIN_TOKEN)
-        self.INITIAL_RUN = self.settings.value('INITIAL_RUN', self.INITIAL_RUN)
+        self.INITIAL_RUN = self.settings.value('INITIAL_RUN', self.INITIAL_RUN, bool)
 
         print('\non _read_settings() function')
         print(f'self.SALT: {self.SALT}')
@@ -70,6 +73,7 @@ class LoginDialog(QDialog):
         self.settings.setValue('SALT', self.SALT)
         self.settings.setValue('LOGIN_TOKEN', self.LOGIN_TOKEN)
         self.settings.setValue('INITIAL_RUN', self.INITIAL_RUN)
+        # self.settings.setValue('INITIAL_RUN', True)
 
     def _widgets(self):
 
