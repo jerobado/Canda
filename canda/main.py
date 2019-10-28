@@ -12,14 +12,17 @@ Benefits
 import sys
 from PyQt5.QtWidgets import QApplication
 
-from canda.widgets.dialogs import (LoginDialog,
+from canda.widgets.dialogs import (SetupDialog,
+                                   LoginDialog,
                                    MainDialog)
 
 
 if __name__ == '__main__':
     APP = QApplication(sys.argv)
-    login = LoginDialog()
-    if login.exec() == LoginDialog.Accepted:
+    # login = LoginDialog()
+    setup = SetupDialog()
+    if setup.exec() == SetupDialog.Accepted:
+    # if login.exec() == LoginDialog.Accepted:
         window = MainDialog()
         window.show()
         APP.exec()
