@@ -20,6 +20,85 @@ from canda.core import canda
 from canda.data import constant
 
 
+# [] TODO: create a setup dialog that will initialize the masterkey
+class SetupDialog(QDialog):
+
+    def __init__(self, parent=None):
+
+        super().__init__(parent)
+        self._widgets()
+        self._properties()
+        self._layouts()
+        self._connections()
+
+    def _widgets(self):
+
+        self.accountnameLabel = QLabel()
+        self.masterkeyLabel = QLabel()
+        self.confirmkeyLabel = QLabel()
+        self.confirmationLabel = QLabel()
+
+        self.accountnameLineEdit = QLineEdit()
+        self.masterkeyLineEdit = QLineEdit()
+        self.confirmkeyLineEdit = QLineEdit()
+
+        self.setPushButton = QPushButton('&Set Account')
+
+    def _properties(self):
+
+        self.accountnameLabel.setObjectName('accountnameLabel')
+        self.accountnameLabel.setText('Account name:')
+
+        self.masterkeyLabel.setObjectName('masterkeyLabel')
+        self.masterkeyLabel.setText('Master key:')
+
+        self.masterkeyLineEdit.setObjectName('masterkeyLineEdit')
+        self.masterkeyLineEdit.setPlaceholderText('Something hard to guess')
+        self.masterkeyLineEdit.setEchoMode(QLineEdit.Password)
+
+        self.confirmkeyLabel.setObjectName('confirmkeyLabel')
+        self.confirmkeyLabel.setText('Confirm master key:')
+
+        self.confirmkeyLineEdit.setObjectName('confirmkeyLineEdit')
+        self.confirmkeyLineEdit.setPlaceholderText('Making sure you typed the first one correctly')
+        self.confirmkeyLineEdit.setEchoMode(QLineEdit.Password)
+
+        self.setPushButton.setObjectName('setPushButton')
+        self.setPushButton.setEnabled(False)
+
+        self.setWindowTitle('Setup Canda')
+        self.resize(426, 142)
+
+    def _layouts(self):
+
+        grid = QGridLayout()
+        grid.addWidget(self.accountnameLabel, 0, 0)
+        grid.addWidget(self.accountnameLineEdit, 0, 1)
+        grid.addWidget(self.masterkeyLabel, 1, 0)
+        grid.addWidget(self.masterkeyLineEdit, 1, 1)
+        grid.addWidget(self.confirmkeyLabel, 2, 0)
+        grid.addWidget(self.confirmkeyLineEdit, 2, 1)
+        grid.addWidget(self.confirmationLabel, 3, 1)
+
+        row_button = QHBoxLayout()
+        row_button.addStretch()
+        row_button.addWidget(self.setPushButton)
+
+        col_layout = QVBoxLayout()
+        col_layout.addLayout(grid)
+        col_layout.addLayout(row_button)
+
+        self.setLayout(col_layout)
+
+    def _connections(self):
+
+        ...
+
+    def resizeEvent(self, QResizeEvent):
+
+        print(f'{self.width()} x {self.height()}')
+
+
 class LoginDialog(QDialog):
 
     def __init__(self, parent=None):
