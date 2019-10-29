@@ -19,10 +19,10 @@ from canda.widgets.dialogs import (SetupDialog,
 
 if __name__ == '__main__':
     APP = QApplication(sys.argv)
-    # login = LoginDialog()
     setup = SetupDialog()
     if setup.exec() == SetupDialog.Accepted:
-    # if login.exec() == LoginDialog.Accepted:
-        window = MainDialog()
-        window.show()
-        APP.exec()
+        login = LoginDialog()
+        if login.exec() == LoginDialog.Accepted:
+            window = MainDialog()
+            window.show()
+            APP.exec()
