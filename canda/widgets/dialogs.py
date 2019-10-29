@@ -53,14 +53,14 @@ class SetupDialog(QDialog):
         self.masterkeyLabel.setText('Master key:')
 
         self.masterkeyLineEdit.setObjectName('masterkeyLineEdit')
-        self.masterkeyLineEdit.setPlaceholderText('Something hard to guess')
+        self.masterkeyLineEdit.setPlaceholderText(' something hard to guess')
         self.masterkeyLineEdit.setEchoMode(QLineEdit.Password)
 
         self.confirmkeyLabel.setObjectName('confirmkeyLabel')
         self.confirmkeyLabel.setText('Confirm master key:')
 
         self.confirmkeyLineEdit.setObjectName('confirmkeyLineEdit')
-        self.confirmkeyLineEdit.setPlaceholderText('Making sure you typed the first one correctly')
+        self.confirmkeyLineEdit.setPlaceholderText(' making sure to avoid typos')
         self.confirmkeyLineEdit.setEchoMode(QLineEdit.Password)
 
         self.setPushButton.setObjectName('setPushButton')
@@ -92,7 +92,39 @@ class SetupDialog(QDialog):
 
     def _connections(self):
 
-        ...
+        self.accountnameLineEdit.textChanged.connect(self.on_LineEdits_textChanged)
+        self.masterkeyLineEdit.textChanged.connect(self.on_LineEdits_textChanged)
+        self.confirmkeyLineEdit.textChanged.connect(self.on_LineEdits_textChanged)
+        self.setPushButton.clicked.connect(self.on_setPushButton_clicked)
+
+    def on_LineEdits_textChanged(self):
+
+        # if self.confirmationLabel.text(): self.confirmationLabel.clear()
+
+        # Enable of disable Set button if either of the three QLineEdits has a values
+        with_text = [self.accountnameLineEdit.text(), self.masterkeyLineEdit.text(), self.confirmkeyLineEdit.text()]
+        print(with_text)
+
+        if all(with_text):
+            self.setPushButton.setEnabled(True)
+        else:
+            self.setPushButton.setEnabled(False)
+
+    def on_setPushButton_clicked(self):
+
+        self.check_masterkey_typo()
+
+    def check_masterkey_typo(self):
+
+        # Check for master key typos before encrypting it
+        if self.masterkeyLineEdit.text() == self.confirmkeyLineEdit.text():
+            print('password match, you may now proceed in encrypting the master key')
+            self.accept()
+        else:
+            self.confirmationLabel.setText('Master key does not match.')
+            self.masterkeyLineEdit.setFocus(True)
+            self.confirmkeyLineEdit.clear()
+            self.setPushButton.setEnabled(False)
 
     def resizeEvent(self, QResizeEvent):
 
