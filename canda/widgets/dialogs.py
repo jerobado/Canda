@@ -31,6 +31,8 @@ class SetupDialog(QDialog):
         self._layouts()
         self._connections()
 
+        self.settings = QSettings()
+
     def _widgets(self):
 
         self.accountnameLabel = QLabel()
@@ -133,33 +135,36 @@ class SetupDialog(QDialog):
 
 class LoginDialog(QDialog):
 
-    def __init__(self, parent=None):
+    def __init__(self, account_name='', unverifed_key='', parent=None):
 
         super().__init__(parent)
         self.masterkey = canda.MASTER_KEY
-        self.settings = QSettings('jerobado', 'Canda')
+        # self.settings = QSettings('jerobado', 'Canda')
+        self.settings = QSettings(account_name, 'Canda')
         # self.settings = QSettings()
         # self.settings.clear()
+        self.UNVERIFIED_KEY = unverifed_key
         self.INITIAL_RUN = True
         self.SALT = None
         self.LOGIN_TOKEN = None
 
         # TEST: playing with QSettings
         self._read_settings()
-        self._set_masterkey()
+        self._set_masterkey(self.UNVERIFIED_KEY)
 
         self._widgets()
         self._properties()
         self._layouts()
         self._connections()
 
-    def _set_masterkey(self):
+    def _set_masterkey(self, key):
         """ Set default master key. """
 
         print(self.INITIAL_RUN)
         if self.INITIAL_RUN:
             print('first setup of masterkey')
-            credentials = canda.set_masterkey3('defaultkeyx')
+            # credentials = canda.set_masterkey3('defaultkeyx')
+            credentials = canda.set_masterkey3(key)
             self.SALT = credentials[1]
             self.LOGIN_TOKEN = credentials[2]
             self.INITIAL_RUN = False
@@ -253,7 +258,8 @@ class LoginDialog(QDialog):
 
         if event.key() == Qt.Key_Return:
             print('Validating key...')
-            self.verify(self.loginLineEdit.text())
+            # self.verify(self.loginLineEdit.text())
+            self.verify(self.UNVERIFIED_KEY)
 
 
 class MainDialog(QDialog):
