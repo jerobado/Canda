@@ -31,8 +31,6 @@ class SetupDialog(QDialog):
         self._layouts()
         self._connections()
 
-        self.settings = QSettings()
-
     def _widgets(self):
 
         self.accountnameLabel = QLabel()
@@ -121,12 +119,31 @@ class SetupDialog(QDialog):
         # Check for master key typos before encrypting it
         if self.masterkeyLineEdit.text() == self.confirmkeyLineEdit.text():
             print('password match, you may now proceed in encrypting the master key')
+            credentials = self.encrypt_user_credentials()
+            self._write_settings(credentials)
             self.accept()
         else:
             self.confirmationLabel.setText('Master key does not match.')
             self.masterkeyLineEdit.setFocus(True)
             self.confirmkeyLineEdit.clear()
             self.setPushButton.setEnabled(False)
+
+    def encrypt_user_credentials(self):
+        """ Encrypt user inputted credentials.
+
+            Return key, salt, token
+        """
+
+        return canda.set_masterkey3(self.masterkeyLineEdit.text())
+
+    def _write_settings(self, data):
+        """ Save encrypted credentials to QSettings. """
+
+        self.settings = QSettings(self.accountnameLineEdit.text())
+        self.settings.setValue('SALT', data[1])
+        self.settings.setValue('LOGIN_TOKEN', data[2])
+        self.settings.setValue('INITIAL_RUN', False)
+        print(self.objectName(), 'settings save.')
 
     def resizeEvent(self, QResizeEvent):
 
@@ -142,15 +159,15 @@ class LoginDialog(QDialog):
         # self.settings = QSettings('jerobado', 'Canda')
         self.settings = QSettings(account_name, 'Canda')
         # self.settings = QSettings()
-        # self.settings.clear()
+        self.settings.clear()
         self.UNVERIFIED_KEY = unverifed_key
         self.INITIAL_RUN = True
         self.SALT = None
         self.LOGIN_TOKEN = None
 
-        # TEST: playing with QSettings
+        # TEST: playing with QSettings`
         self._read_settings()
-        self._set_masterkey(self.UNVERIFIED_KEY)
+        # self._set_masterkey(self.UNVERIFIED_KEY)
 
         self._widgets()
         self._properties()
@@ -258,8 +275,8 @@ class LoginDialog(QDialog):
 
         if event.key() == Qt.Key_Return:
             print('Validating key...')
-            # self.verify(self.loginLineEdit.text())
-            self.verify(self.UNVERIFIED_KEY)
+            self.verify(self.loginLineEdit.text())
+            # self.verify(self.UNVERIFIED_KEY)
 
 
 class MainDialog(QDialog):
