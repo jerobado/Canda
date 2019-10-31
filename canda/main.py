@@ -26,7 +26,8 @@ def without_masterkey():
     APP = QApplication(sys.argv)
     setup = SetupDialog()
     if setup.exec() == SetupDialog.Accepted:
-        login = LoginDialog(setup.accountnameLineEdit.text(), setup.masterkeyLineEdit.text())
+        login = LoginDialog(account_name=setup.accountnameLineEdit.text())
+        # login = LoginDialog()
         if login.exec() == LoginDialog.Accepted:
             window = MainDialog()
             window.show()
@@ -37,7 +38,7 @@ def with_masterkey():
     """ Run this if a master key is already setup. """
 
     APP = QApplication(sys.argv)
-    login = LoginDialog()
+    login = LoginDialog(account_name='main_settings')
     if login.exec() == LoginDialog.Accepted:
         window = MainDialog()
         window.show()
@@ -46,19 +47,20 @@ def with_masterkey():
 
 if __name__ == '__main__':
     APP = QApplication(sys.argv)
-    # setup = SetupDialog()
-    # if setup.exec() == SetupDialog.Accepted:
-    #     login = LoginDialog(setup.accountnameLineEdit.text(), setup.masterkeyLineEdit.text())
-    #     if login.exec() == LoginDialog.Accepted:
-    #         window = MainDialog()
-    #         window.show()
-    #         APP.exec()
+
     settings = QSettings('main_settings', 'Canda')
+    # settings = QSettings()
     # settings.clear()
+
+    # INITIAL_RUN = settings.value('INITIAL_RUN', INITIAL_RUN, bool)
     INITIAL_RUN = settings.value('INITIAL_RUN', INITIAL_RUN, bool)
+    print('before if:', INITIAL_RUN)
+
 
     if INITIAL_RUN:
+        print(f'without_masterkey, INITIAL_RUN: {INITIAL_RUN}')
         without_masterkey()
-        settings.setValue('INITIAL_RUN', False)
+        # settings.setValue('INITIAL_RUN', True)
     else:
+        print('with_masterkey')
         with_masterkey()
