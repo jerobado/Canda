@@ -15,8 +15,10 @@ from PyQt5.QtWidgets import QApplication
 from canda.widgets.dialogs import (SetupDialog,
                                    LoginDialog,
                                    MainDialog)
+from canda.data.constant import ACCOUNT_NAME
 
 # get account name to get the main user
+# ACCOUNT_NAME = '1'  # unique ID of this computer as account name
 INITIAL_RUN = True
 
 
@@ -26,7 +28,7 @@ def without_masterkey():
     APP = QApplication(sys.argv)
     setup = SetupDialog()
     if setup.exec() == SetupDialog.Accepted:
-        login = LoginDialog(account_name=setup.accountnameLineEdit.text())
+        login = LoginDialog(account_name=ACCOUNT_NAME)
         # login = LoginDialog()
         if login.exec() == LoginDialog.Accepted:
             window = MainDialog()
@@ -38,7 +40,7 @@ def with_masterkey():
     """ Run this if a master key is already setup. """
 
     APP = QApplication(sys.argv)
-    login = LoginDialog(account_name='main_settings')
+    login = LoginDialog(account_name=ACCOUNT_NAME)
     if login.exec() == LoginDialog.Accepted:
         window = MainDialog()
         window.show()
@@ -47,20 +49,19 @@ def with_masterkey():
 
 if __name__ == '__main__':
     APP = QApplication(sys.argv)
+    APP.setOrganizationName(ACCOUNT_NAME)
+    APP.setApplicationName('Canda')
 
-    settings = QSettings('main_settings', 'Canda')
-    # settings = QSettings()
-    # settings.clear()
+    settings = QSettings()
 
     # INITIAL_RUN = settings.value('INITIAL_RUN', INITIAL_RUN, bool)
     INITIAL_RUN = settings.value('INITIAL_RUN', INITIAL_RUN, bool)
     print('before if:', INITIAL_RUN)
 
-
-    if INITIAL_RUN:
+    if not INITIAL_RUN:
+        print('with_masterkey')
+        with_masterkey()
+    else:
         print(f'without_masterkey, INITIAL_RUN: {INITIAL_RUN}')
         without_masterkey()
         # settings.setValue('INITIAL_RUN', True)
-    else:
-        print('with_masterkey')
-        with_masterkey()
