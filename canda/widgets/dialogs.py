@@ -18,6 +18,7 @@ from PyQt5.QtWidgets import (QDialog,
 from canda import __version__
 from canda.core import canda
 from canda.data import constant
+from canda.data.constant import ACCOUNT_NAME
 
 
 # [] TODO: create a setup dialog that will initialize the masterkey
@@ -26,6 +27,7 @@ class SetupDialog(QDialog):
     def __init__(self, parent=None):
 
         super().__init__(parent)
+        self.settings = QSettings()
         self._widgets()
         self._properties()
         self._layouts()
@@ -48,6 +50,10 @@ class SetupDialog(QDialog):
 
         self.accountnameLabel.setObjectName('accountnameLabel')
         self.accountnameLabel.setText('Account name:')
+
+        # [ ] TODO: potentially to be removed
+        self.accountnameLabel.setEnabled(False)
+        self.accountnameLineEdit.setEnabled(False)
 
         self.masterkeyLabel.setObjectName('masterkeyLabel')
         self.masterkeyLabel.setText('Master key:')
@@ -102,7 +108,8 @@ class SetupDialog(QDialog):
         # if self.confirmationLabel.text(): self.confirmationLabel.clear()
 
         # Enable of disable Set button if either of the three QLineEdits has a values
-        with_text = [self.accountnameLineEdit.text(), self.masterkeyLineEdit.text(), self.confirmkeyLineEdit.text()]
+        # with_text = [self.accountnameLineEdit.text(), self.masterkeyLineEdit.text(), self.confirmkeyLineEdit.text()]
+        with_text = [self.masterkeyLineEdit.text(), self.confirmkeyLineEdit.text()]
         print(with_text)
 
         if all(with_text):
@@ -139,10 +146,12 @@ class SetupDialog(QDialog):
     def _write_settings(self, data):
         """ Save encrypted credentials to QSettings. """
 
-        self.settings = QSettings(self.accountnameLineEdit.text())
+        # self.settings = QSettings()
+        print(f'on _write_settings: {self.settings.allKeys()}')
         self.settings.setValue('SALT', data[1])
         self.settings.setValue('LOGIN_TOKEN', data[2])
         self.settings.setValue('INITIAL_RUN', False)
+        self.settings.sync()
         print(self.objectName(), 'settings save.')
 
     def resizeEvent(self, QResizeEvent):
@@ -156,10 +165,7 @@ class LoginDialog(QDialog):
 
         super().__init__(parent)
         self.masterkey = canda.MASTER_KEY
-        # self.settings = QSettings('jerobado', 'Canda')
-        self.settings = QSettings(account_name, 'Canda')
-        # self.settings = QSettings()
-        self.settings.clear()
+        self.settings = QSettings()
         self.UNVERIFIED_KEY = unverifed_key
         self.INITIAL_RUN = True
         self.SALT = None
@@ -299,6 +305,7 @@ class MainDialog(QDialog):
         self.addPushButton = QPushButton()
         self.updatePushButton = QPushButton()
         self.deletePushButton = QPushButton()
+        self.setmasterkeyButton = QPushButton()
         self.questionMessageBox = QMessageBox()
 
     def _properties(self):
@@ -334,6 +341,8 @@ class MainDialog(QDialog):
         self.deletePushButton.setText('&Delete')
         self.deletePushButton.setEnabled(False)
 
+        self.setmasterkeyButton.setText('&Set Master Key')
+
     def _layouts(self):
 
         records_col = QVBoxLayout()
@@ -349,6 +358,7 @@ class MainDialog(QDialog):
         buttons_col.addWidget(self.addPushButton)
         buttons_col.addWidget(self.updatePushButton)
         buttons_col.addWidget(self.deletePushButton)
+        buttons_col.addWidget(self.setmasterkeyButton)
         buttons_col.addStretch()
 
         combined_row = QHBoxLayout()
@@ -365,6 +375,7 @@ class MainDialog(QDialog):
         self.addPushButton.clicked.connect(self.on_addPushButton_clicked)
         self.updatePushButton.clicked.connect(self.on_updatePushButton_clicked)
         self.deletePushButton.clicked.connect(self.on_deletePushButton_clicked)
+        self.setmasterkeyButton.clicked.connect(self.on_setmasterkeyPushButton_clicked)
 
     def on_recordListWidget_itemClicked(self):
 
@@ -473,6 +484,19 @@ class MainDialog(QDialog):
             self.updatePushButton.setEnabled(False)
             self.deletePushButton.setEnabled(False)
             self.detailsTextEdit.clear()
+
+    def on_setmasterkeyPushButton_clicked(self):
+
+        print('show Setup dialog')
+        # show Setup dialog
+        # show Login dialog
+        setup = SetupDialog()
+        if setup.exec() == SetupDialog.Accepted:
+            login = LoginDialog(account_name=setup.accountnameLineEdit.text())
+            # login = LoginDialog(account_name=ACCOUNT_NAME)
+            if login.exec() == LoginDialog.Accepted:
+                window = MainDialog()
+                window.show()
 
     def keyPressEvent(self, event):
 
