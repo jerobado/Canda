@@ -15,11 +15,8 @@ from PyQt5.QtWidgets import QApplication
 from canda.widgets.dialogs import (SetupDialog,
                                    LoginDialog,
                                    MainDialog)
-from canda.data.constant import ACCOUNT_NAME
-
-# get account name to get the main user
-# ACCOUNT_NAME = '1'  # unique ID of this computer as account name
-INITIAL_RUN = True
+from canda.data.constant import (ACCOUNT_NAME,
+                                 INITIAL_RUN)
 
 
 def without_masterkey():
