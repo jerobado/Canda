@@ -290,10 +290,20 @@ class MainDialog(QDialog):
     def __init__(self, parent=None):
 
         super().__init__(parent)
+        self.settings = QSettings()
+        self._read_settings()
         self._widgets()
         self._properties()
         self._layouts()
         self._connections()
+
+    def _read_settings(self):
+
+        constant.RECORDS = self.settings.value('RECORDS', constant.RECORDS)
+
+    def _write_settings(self):
+
+        self.settings.setValue('RECORDS', constant.RECORDS)
 
     def _widgets(self):
 
@@ -463,7 +473,7 @@ class MainDialog(QDialog):
 
         current_row = self.recordListWidget.currentRow()
         current_record = constant.RECORDS[current_row]
-        message = f'Do you want to delete you account in \'{current_record["account"]}\'?'
+        message = f'Do you want to delete your account in \'{current_record["account"]}\'?'
         result = QMessageBox.question(self, 'Before you do that...', message)
 
         # If the user hit Yes
@@ -492,11 +502,17 @@ class MainDialog(QDialog):
         # show Login dialog
         setup = SetupDialog()
         if setup.exec() == SetupDialog.Accepted:
+
             login = LoginDialog(account_name=setup.accountnameLineEdit.text())
+            login.setWindowTitle('Re-login')
             # login = LoginDialog(account_name=ACCOUNT_NAME)
+            self.hide()
             if login.exec() == LoginDialog.Accepted:
-                window = MainDialog()
-                window.show()
+                self.show()
+
+    def closeEvent(self, event):
+
+        self._write_settings()
 
     def keyPressEvent(self, event):
 
