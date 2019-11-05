@@ -8,6 +8,7 @@ verify_ssl = true
 [packages]
 pyqt5 = "*"
 cryptography = "*"
+pyinstaller = "*"
 
 [requires]
 python_version = "3.7"
