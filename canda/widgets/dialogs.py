@@ -18,10 +18,8 @@ from PyQt5.QtWidgets import (QDialog,
 from canda import __version__
 from canda.core import canda
 from canda.data import constant
-from canda.data.constant import ACCOUNT_NAME
 
 
-# [] TODO: create a setup dialog that will initialize the masterkey
 class SetupDialog(QDialog):
 
     def __init__(self, parent=None):
@@ -51,9 +49,11 @@ class SetupDialog(QDialog):
         self.accountnameLabel.setObjectName('accountnameLabel')
         self.accountnameLabel.setText('Account name:')
 
-        # [ ] TODO: potentially to be removed
+        # Temporary hidden from view, possible usage in the future
         self.accountnameLabel.setEnabled(False)
         self.accountnameLineEdit.setEnabled(False)
+        self.accountnameLabel.setVisible(False)
+        self.accountnameLineEdit.setVisible(False)
 
         self.masterkeyLabel.setObjectName('masterkeyLabel')
         self.masterkeyLabel.setText('Master key:')
@@ -73,7 +73,7 @@ class SetupDialog(QDialog):
         self.setPushButton.setEnabled(False)
 
         self.setWindowTitle('Setup Canda')
-        self.resize(426, 142)
+        self.resize(426, 116)
 
     def _layouts(self):
 
@@ -329,9 +329,7 @@ class MainDialog(QDialog):
         self.recordListWidget.setObjectName('recordListView')
         # self.recordListWidget.insertItems(0, constant.RECORDS)  # [] TODO: use QListView
 
-        # [] TODO: use QSettings here to retrieve the data from the last session
         if constant.RECORDS:
-            # TEST: inserting using for loop
             for index, value in enumerate(constant.RECORDS):
                 self.recordListWidget.insertItem(index, constant.RECORDS[index]['account'])
 
