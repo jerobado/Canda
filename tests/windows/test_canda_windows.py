@@ -75,33 +75,12 @@ class CandaCoreTest(unittest.TestCase):
         result = self.canda.login('xxx')
         self.assertFalse(result)
 
-    def test_login2_function_return_true(self):
-        """ Test if login2 function returns True, it means we are now using cryptography """
-
-        result = self.canda.login2('masterkey')
-        self.assertTrue(result)
-
-    def test_login2_function_return_false(self):
-        """ Test if login2 function will raise an InvalidToken if password does not match """
-
-        from cryptography.fernet import InvalidToken
-
-        result = self.canda.login2('notyourpassword')
-        self.assertFalse(result)
-
     def test_set_masterkey_function_return_equal(self):
         """ Test if set_masterkey(key) will change the default masterkey """
 
         result = self.canda.set_masterkey('freshmasterkey')
         expected = 'freshmasterkey'
         self.assertEqual(result, expected)
-
-    def test_set_masterkey2_function_return_equal(self):
-        """ Test if set_masterkey2 will return a bytes key """
-
-        result = self.canda.set_masterkey2('tanderx')
-        expected = bytes
-        self.assertEqual(type(result), expected)
 
     def test_add_record_function_return_dict(self):
         """ Test if add_record will return a dictionary """

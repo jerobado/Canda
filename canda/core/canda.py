@@ -1,9 +1,7 @@
 """ Core operation of Canda """
 
 import os
-from canda.data.constant import (LOGIN_TOKEN,
-                                 SALT,
-                                 LOGIN_VERIFICATION_MESSAGE)
+from canda.data.constant import (LOGIN_VERIFICATION_MESSAGE)
 
 
 __version__ = 0.1
@@ -21,36 +19,6 @@ def login(key):
     if key == MASTER_KEY:
         return True
     else:
-        return False
-
-
-def login2(key):
-    """ Test login using cryptography library """
-
-    try:
-        import base64
-        from cryptography.fernet import Fernet
-        from cryptography.fernet import InvalidToken
-        from cryptography.hazmat.backends import default_backend
-        from cryptography.hazmat.primitives import hashes
-        from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-
-        password = key.encode()
-        kdf = PBKDF2HMAC(algorithm=hashes.SHA256(),
-                         length=32,
-                         salt=SALT,
-                         iterations=100000,
-                         backend=default_backend())
-        key = base64.urlsafe_b64encode(kdf.derive(password))
-        f = Fernet(key)
-        message = f.decrypt(LOGIN_TOKEN)
-
-        if message == LOGIN_VERIFICATION_MESSAGE:
-            print('password verified')
-            return True
-
-    except InvalidToken:
-        print('Invalid Token: password unverified, try again')
         return False
 
 
@@ -107,27 +75,9 @@ def remove_record(index, record):
     return record.pop(index)
 
 
+# [] TODO: for deletion, check other usage
 def set_masterkey(key):
 
-    return key
-
-
-def set_masterkey2(key):
-    """ Using cryptography to set the masterkey """
-
-    import base64
-    from cryptography.hazmat.backends import default_backend
-    from cryptography.hazmat.primitives import hashes
-    from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-
-    # for setting up new password
-    password = key.encode()
-    kdf = PBKDF2HMAC(algorithm=hashes.SHA256(),
-                     length=32,
-                     salt=SALT,
-                     iterations=100000,
-                     backend=default_backend())
-    key = base64.urlsafe_b64encode(kdf.derive(password))
     return key
 
 
@@ -162,7 +112,5 @@ def set_masterkey3(key):
     return key, salt, token
 
 
+# [] TODO: for deletion, check other usage
 MASTER_KEY = _master_key()
-
-
-
