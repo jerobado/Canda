@@ -1,6 +1,4 @@
 
-import base64
-import os
 import subprocess
 from string import Template
 
@@ -21,8 +19,6 @@ def get_unique_pc_identifier():
 
 DETAILS_TEMPLATE = Template(_template)
 RECORDS = []
-SALT = None     # base64.b64decode(os.environ['CANDA_SALT'])            # [] TODO: check canda.login2, to be deleted
-LOGIN_TOKEN = None  # os.environ['CANDA_LOGIN_TOKEN'].encode()          # [] TODO: check canda.login2, to be deleted
 LOGIN_VERIFICATION_MESSAGE = b'password verified'           # [] TODO: use different message
 ACCOUNT_NAME = get_unique_pc_identifier()                   # for production
 # ACCOUNT_NAME = '5'                                        # for development
