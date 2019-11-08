@@ -1,5 +1,6 @@
 
 import subprocess
+import sys
 from string import Template
 
 
@@ -12,8 +13,15 @@ Password: $password
 def get_unique_pc_identifier():
     """ Get and return computer's BIOS serialnumber. """
 
-    args = ['wmic', 'bios', 'get', 'serialnumber']
+    # For Windows
+    if sys.platform.startswith('win32'):
+        args = ['wmic', 'bios', 'get', 'serialnumber']
+    elif sys.platform.startswith('linux'):
+        # [] TODO: add commands for Linux
+        args = ['dmidecode', '-s', 'bios-version']
+
     result = subprocess.run(args, capture_output=True, text=True)
+
     return result.stdout.strip('SerialNumber\n ')
 
 
