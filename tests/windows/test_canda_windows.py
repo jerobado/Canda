@@ -150,6 +150,15 @@ class CandaCoreTest(unittest.TestCase):
                     'account': 'Yahoo'}
         self.assertDictEqual(result, expected)
 
+    def test_get_operating_system_windows(self):
+        """ Test if get_platform() will return 'win32' """
+
+        result = self.canda.get_platform()
+        expected = 'win32'
+
+        self.assertEqual(result, expected)
+
+
 
 if __name__ == '__main__':
     unittest.main()
