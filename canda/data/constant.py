@@ -2,7 +2,7 @@
 import subprocess
 import sys
 from string import Template
-
+from canda.core import canda
 
 _template = """Account: $account
 Username: $username
@@ -20,7 +20,10 @@ def get_unique_pc_identifier():
         # [] TODO: add commands for Linux
         args = ['dmidecode', '-s', 'bios-version']
 
+    # args = canda.get_bios_version_args()
+
     result = subprocess.run(args, capture_output=True, text=True)
+    print(result)
 
     return result.stdout.strip('SerialNumber\n ')
 
