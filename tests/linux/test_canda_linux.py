@@ -53,6 +53,13 @@ class CandaCoreTest(unittest.TestCase):
         result = self.canda.login('xxx')
         self.assertFalse(result)
 
+    def test_get_bios_version_args(self):
+
+        result = self.canda.get_bios_version_args()
+        expected = ['dmidecode', '-s', 'bios-version']
+
+        self.assertNotEqual(result, expected)
+
 
 if __name__ == '__main__':
     unittest.main()
