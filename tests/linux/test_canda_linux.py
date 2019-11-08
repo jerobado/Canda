@@ -58,7 +58,7 @@ class CandaCoreTest(unittest.TestCase):
         result = self.canda.get_bios_version_args()
         expected = ['dmidecode', '-s', 'bios-version']
 
-        self.assertNotEqual(result, expected)
+        self.assertEqual(result, expected)
 
 
 if __name__ == '__main__':
