@@ -1,6 +1,7 @@
 """ Core operation of Canda """
 
 import os
+import sys
 from canda.data.constant import (LOGIN_VERIFICATION_MESSAGE)
 
 
@@ -110,6 +111,26 @@ def set_masterkey3(key):
     print(f'token: {token}')
 
     return key, salt, token
+
+
+def get_platform():
+    """ Get the underlying operating system. """
+
+    return sys.platform
+
+
+def get_bios_version_args():
+    """ Get os specific commands to show the BIOS serial number. """
+
+    args = None
+
+    if sys.platform.startswith('win32'):
+        args = ['wmic', 'bios', 'get', 'serialnumber']
+    elif sys.platform.startswith('linux'):
+        # [] TODO: add commands for Linux
+        args = ['dmidecode', '-s', 'bios-version']
+
+    return args
 
 
 # [] TODO: for deletion, check other usage
