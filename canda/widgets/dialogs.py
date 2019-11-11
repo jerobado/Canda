@@ -110,7 +110,6 @@ class SetupDialog(QDialog):
         # Enable of disable Set button if either of the three QLineEdits has a values
         # with_text = [self.accountnameLineEdit.text(), self.masterkeyLineEdit.text(), self.confirmkeyLineEdit.text()]
         with_text = [self.masterkeyLineEdit.text(), self.confirmkeyLineEdit.text()]
-        print(with_text)
 
         if all(with_text):
             self.setPushButton.setEnabled(True)
@@ -146,13 +145,11 @@ class SetupDialog(QDialog):
     def _write_settings(self, data):
         """ Save encrypted credentials to QSettings. """
 
-        # self.settings = QSettings()
-        print(f'on _write_settings: {self.settings.allKeys()}')
         self.settings.setValue('SALT', data[1])
         self.settings.setValue('LOGIN_TOKEN', data[2])
         self.settings.setValue('INITIAL_RUN', False)
         self.settings.sync()
-        print(self.objectName(), 'settings save.')
+        print('settings save.')
 
     def resizeEvent(self, QResizeEvent):
 
@@ -171,29 +168,11 @@ class LoginDialog(QDialog):
         self.SALT = None
         self.LOGIN_TOKEN = None
 
-        # TEST: playing with QSettings`
         self._read_settings()
-        # self._set_masterkey(self.UNVERIFIED_KEY)
-
         self._widgets()
         self._properties()
         self._layouts()
         self._connections()
-
-    def _set_masterkey(self, key):
-        """ Set default master key. """
-
-        print(self.INITIAL_RUN)
-        if self.INITIAL_RUN:
-            print('first setup of masterkey')
-            # credentials = canda.set_masterkey3('defaultkeyx')
-            credentials = canda.set_masterkey3(key)
-            self.SALT = credentials[1]
-            self.LOGIN_TOKEN = credentials[2]
-            self.INITIAL_RUN = False
-            print(f'INTIAL_RUN: {self.INITIAL_RUN}')
-        else:
-            print('you can use the masterkey you previously use')
 
     def _read_settings(self):
         """ Get restored last application settings. """
@@ -202,17 +181,12 @@ class LoginDialog(QDialog):
         self.LOGIN_TOKEN = self.settings.value('LOGIN_TOKEN', self.LOGIN_TOKEN)
         self.INITIAL_RUN = self.settings.value('INITIAL_RUN', self.INITIAL_RUN, bool)
 
-        print('\non _read_settings() function')
-        print(f'self.SALT: {self.SALT}')
-        print(f'self.LOGIN_TOKEN: {self.LOGIN_TOKEN}')
-
     def _write_settings(self):
         """ Save new application settings. """
 
         self.settings.setValue('SALT', self.SALT)
         self.settings.setValue('LOGIN_TOKEN', self.LOGIN_TOKEN)
         self.settings.setValue('INITIAL_RUN', self.INITIAL_RUN)
-        # self.settings.setValue('INITIAL_RUN', True)
 
     def _widgets(self):
 
@@ -235,7 +209,7 @@ class LoginDialog(QDialog):
         vbox = QVBoxLayout()
         vbox.addWidget(self.loginLabel)
         vbox.addWidget(self.loginLineEdit)
-        vbox.addWidget(self.setmasterkeyLabel)
+        # vbox.addWidget(self.setmasterkeyLabel)
 
         self.setLayout(vbox)
 
@@ -245,7 +219,8 @@ class LoginDialog(QDialog):
 
     def on_loginLineEdit_textChanged(self):
 
-        print(self.loginLineEdit.text())
+        # [] TODO: can this be deleted?
+        ...
 
     def verify(self, unverified_key):
         """ Verify master key. """
@@ -387,8 +362,6 @@ class MainDialog(QDialog):
 
     def on_recordListWidget_itemClicked(self):
 
-        print('click at ', self.recordListWidget.currentRow())
-
         # To display the details of the selected item
         current_row = self.recordListWidget.currentRow()
         selected_record_dict = constant.RECORDS[current_row]
@@ -465,7 +438,7 @@ class MainDialog(QDialog):
                 self.recordListWidget.insertItem(index, constant.RECORDS[index]['account'])
             self.recordListWidget.setCurrentRow(new_current_row)
 
-            print('updated')
+            print('Record updated')
 
     def on_deletePushButton_clicked(self):
 
@@ -474,7 +447,7 @@ class MainDialog(QDialog):
         message = f'Do you want to delete your account in \'{current_record["account"]}\'?'
         result = QMessageBox.question(self, 'Before you do that...', message)
 
-        # If the user hit Yes
+        # If the user hit Yes - 16384
         if result == 16384:
             deleted_record = canda.remove_record(current_row, constant.RECORDS)
             self.recordListWidget.takeItem(current_row)
@@ -495,6 +468,7 @@ class MainDialog(QDialog):
 
     def on_setmasterkeyPushButton_clicked(self):
 
+        # [] TODO: ask the user to enter current master key use
         print('show Setup dialog')
         # show Setup dialog
         # show Login dialog
@@ -606,13 +580,8 @@ class AddDialog(QDialog):
 
     def on_LineEdits_textChanged(self):
 
-        sender = self.sender()
-        print(sender.objectName())
-
         with_text = [self.usernameLineEdit.text(), self.passwordLineEdit.text(), self.accountLineEdit.text()]
-
         if all(with_text):
-            print(with_text)
             self.addPushButton.setEnabled(True)
         else:
             self.addPushButton.setEnabled(False)
@@ -706,13 +675,8 @@ class UpdateDialog(QDialog):
 
     def on_LineEdits_textChanged(self):
 
-        sender = self.sender()
-        print(sender.objectName())
-
         with_text = [self.usernameLineEdit.text(), self.passwordLineEdit.text(), self.accountLineEdit.text()]
-
         if all(with_text):
-            print(with_text)
             self.updatePushButton.setEnabled(True)
         else:
             self.updatePushButton.setEnabled(False)

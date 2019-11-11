@@ -45,12 +45,6 @@ def login3(key, salt, token):
         message = f.decrypt(token)
 
         if message == LOGIN_VERIFICATION_MESSAGE:
-            print('password verified')
-            print('on login3')
-            print(f'\tkey: {key}')
-            print(f'\tsalt: {salt}')
-            print(f'\ttoken: {token}')
-
             return True
 
     except InvalidToken:
@@ -105,11 +99,6 @@ def set_masterkey3(key):
     key = base64.urlsafe_b64encode(kdf.derive(password))
     f = Fernet(key)
     token = f.encrypt(LOGIN_VERIFICATION_MESSAGE)
-    print('\non set_masterkey3() function')
-    print(f'key: {key}')
-    print(f'salt: {salt}')
-    print(f'token: {token}')
-
     return key, salt, token
 
 
