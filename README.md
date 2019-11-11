@@ -1,4 +1,6 @@
 # Canda
+![Powered by](https://img.shields.io/badge/powered%20by-cryptography-blue)
+
  Password manager in the 21st century written and hand-coded in Python.
 
 **Build Status**
