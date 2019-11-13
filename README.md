@@ -1,5 +1,5 @@
 # Canda
-![Powered by](https://img.shields.io/badge/powered%20by-cryptography-blue)
+![Powered by](https://img.shields.io/badge/powered%20by-cryptography%202.8-blue)
 
 Password manager in the 21st century written and hand-coded in Python.
 
@@ -12,16 +12,16 @@ Password manager in the 21st century written and hand-coded in Python.
  - Linux: [![Build Status](https://travis-ci.org/jerobado/Canda.svg?branch=develop-0.1)](https://travis-ci.org/jerobado/Canda)
  
 # Features
- - Set a customizable master key
+ - Set a customizable master key encrypted using `cryptography` Python library
  - Add, delete and update account credentials
  
 # Software Requirements
 
 Here are the list of software tools in developing Canda:
-- Python 3.7.4 or higher - main programming language
-- PyQt 5.13.1 - for the Graphical User Interface (GUI)
-- crytopgraphy 2.8 - for encrypting and decrypting the master key
-- PyInstaller 3.5 - for freezing the codebase and distribution
+- [Python 3.7.4](https://www.python.org/downloads/release/python-374/) or higher - main programming language
+- [PyQt 5.13.1](https://pypi.org/project/PyQt5/) - for the Graphical User Interface (GUI)
+- [crytopgraphy 2.8](https://github.com/pyca/cryptography) - for encrypting and decrypting the master key
+- [PyInstaller 3.5](https://github.com/pyinstaller/pyinstaller) - for freezing the codebase and distribution
 
 # License
 
