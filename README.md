@@ -3,7 +3,7 @@
 
 Password manager in the 21st century written and hand-coded in Python.
 
-![Canda Demo](https://github.com/jerobado/Canda/blob/develop-0.1/docs/images/canda-demo.gif)
+![Canda Demo](https://github.com/jerobado/Canda/blob/master/docs/images/canda-demo.gif)
 
 **CAVEAT**: This application is for educational purposes only. This project was created by the original contributor to learn more about password management and cryptography. Never store personally identifiable information, online bank credentials or sensitive information in this application that you may regret in the future. You've been warned.
 
