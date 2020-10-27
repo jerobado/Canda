@@ -1,11 +1,9 @@
-altgraph==0.16.1
-cffi==1.13.2
-cryptography==2.8
-future==0.18.2
-pefile==2019.4.18
-pycparser==2.19
-PyInstaller==3.5
-PyQt5==5.13.1
-PyQt5-sip==12.7.0
-pywin32-ctypes==0.2.0
-six==1.13.0
+-i https://pypi.org/simple/
+altgraph==0.17
+cffi==1.14.3
+cryptography==3.2
+pycparser==2.20
+pyinstaller==3.5
+pyqt5-sip==12.8.1
+pyqt5==5.13.1
+six==1.15.0
